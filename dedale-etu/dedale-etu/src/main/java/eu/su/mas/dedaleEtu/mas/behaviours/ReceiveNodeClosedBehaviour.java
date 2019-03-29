@@ -30,16 +30,13 @@ public class ReceiveNodeClosedBehaviour extends SimpleBehaviour{
 		if (msg != null) {
 			this.finished = true;
 			try {
-				this.otherCloseNode = (HashSet<String>)msg.getContentObject();
+				this.otherCloseNode.addAll((HashSet<String>)msg.getContentObject());
 				System.out.println(this.myAgent.getLocalName()+" <----Result received from "+msg.getSender().getLocalName());
-				System.out.println("Close Node");
-				System.out.println("---------------------------");
+				System.out.print("Close Node : ");
 				for (String node : this.otherCloseNode) {
 					System.out.print(node + " ");
 				}
 				System.out.println();
-				
-				System.out.println("----------------------------");
 				this.finished = true;
 				trans = 6;
 			} catch (UnreadableException e) {

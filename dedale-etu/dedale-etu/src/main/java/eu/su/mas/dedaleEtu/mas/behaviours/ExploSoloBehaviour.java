@@ -75,7 +75,9 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 		String myPosition=((AbstractDedaleAgent)this.myAgent).getCurrentPosition();
 	
 		if(!this.otherClosedNodes.isEmpty()) {
-			for (String node : this.otherClosedNodes) {
+			Iterator<String> it = this.otherClosedNodes.iterator();
+			while(it.hasNext()) {
+				String node = it.next();
 				if(!this.closedNodes.contains(node)) {
 					this.closedNodes.add(node);
 					if(this.openNodes.contains(node)) {
@@ -83,16 +85,19 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 					}
 					this.myMap.addNode(node,MapAttribute.closed);
 				}
-				this.otherClosedNodes.remove(node);
+				it.remove();
 			}
 		}
 		
 		if(!this.otherEdge.isEmpty()) {
-			for (Couple<String,String> ed : this.edge) {
-				if(!this.edge.contains(ed)) {
+			Iterator<Couple<String,String>> it = this.otherEdge.iterator();
+			while(it.hasNext()) {
+				Couple<String,String> ed = it.next();
+				if((!this.edge.contains(ed)) && this.closedNodes.contains(ed.getLeft()) && this.closedNodes.contains(ed.getRight())) {
 					this.edge.add(ed);
+					this.myMap.addEdge(ed.getLeft(),ed.getRight());
 				}
-				this.otherEdge.remove(ed);
+				it.remove();
 			}
 		}
 		

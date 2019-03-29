@@ -335,7 +335,9 @@ public class Principal {
 		Object [] entityParameters2={"My parameters"};
 		
 		//4) Give the class name of your agent to let the system instantiate it
-		ag=createNewDedaleAgent(c, agentName, DummyMovingAgent.class.getName(), entityParameters2);
+		//ag=createNewDedaleAgent(c, agentName, DummyMovingAgent.class.getName(), entityParameters2);
+		ag=createNewDedaleAgent(c, agentName, ExploreSoloAgent.class.getName(), entityParameters2);
+		
 		agentList.add(ag);
 		
 		

@@ -68,6 +68,7 @@ public class ExploreSoloAgent extends AbstractDedaleAgent {
 		fsm.registerState(new ReceiveNodeClosedBehaviour(this, this.otherClosedNodes), "RNode");
 		fsm.registerState(new SendEdgeBehaviour(this,this.edge), "SEdge");
 		fsm.registerState(new ReceiveEdgeBehaviour(this,this.otherEdge), "REdge");
+		fsm.registerState(new RandomWalkBisBehaviour(this), "RandMove");
 		fsm.registerLastState(new EndBehaviour(this), "End");
 
 		// definition des transaction
@@ -81,9 +82,13 @@ public class ExploreSoloAgent extends AbstractDedaleAgent {
 		fsm.registerTransition("RNode", "SEdge",6);
 		fsm.registerTransition("SEdge","REdge",7);
 		fsm.registerTransition("REdge","REdge",7);
+		fsm.registerTransition("REdge","RandMove",8);
+		fsm.registerTransition("RandMove","Dep",1);
+		fsm.registerTransition("Dep","RandMove",8);
+		
+		//tmp
 		fsm.registerTransition("REdge","Dep",1);
-		fsm.registerTransition("Dep", "End",8);
-
+		
 		lb.add(fsm);
 		/***
 		 * MANDATORY TO ALLOW YOUR AGENT TO BE DEPLOYED CORRECTLY

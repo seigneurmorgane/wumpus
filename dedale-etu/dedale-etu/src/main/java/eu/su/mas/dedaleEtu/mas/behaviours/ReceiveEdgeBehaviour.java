@@ -33,7 +33,7 @@ public class ReceiveEdgeBehaviour extends SimpleBehaviour {
 			this.finished = true;
 			this.trans = 1;
 			try {
-				this.otherEdge = (List<Couple<String,String>>) msg.getContentObject();
+				this.otherEdge.addAll((List<Couple<String,String>>) msg.getContentObject());
 			} catch (UnreadableException e) {
 				e.printStackTrace();
 			}

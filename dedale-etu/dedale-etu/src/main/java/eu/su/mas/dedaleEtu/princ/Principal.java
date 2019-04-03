@@ -344,6 +344,8 @@ public class Principal {
 		/*********
 		 * AGENT Explo3
 		 *********/
+		
+		/*
 		//1) Get the container where the agent will appear
 		c = containerList.get(ConfigurationFile.LOCAL_CONTAINER2_NAME);
 		Assert.assertNotNull("This container does not exist",c);
@@ -357,11 +359,12 @@ public class Principal {
 		//4) Give the class name of your agent to let the system instantiate it
 		ag=createNewDedaleAgent(c, agentName, ExploreSoloAgent.class.getName(), entityParameters3);
 		agentList.add(ag);
-		
+		*/
 		
 		/*********
 		 * AGENT Explo4
 		 *********/
+		/*
 //		//1) Get the container where the agent will appear
 //		c = containerList.get(ConfigurationFile.LOCAL_CONTAINER2_NAME);
 //		Assert.assertNotNull("This container does not exist",c);
@@ -375,7 +378,7 @@ public class Principal {
 //		//4) Give the class name of your agent to let the system instantiate it
 //		ag=createNewDedaleAgent(c, agentName, ExploreSoloAgent.class.getName(), entityParameters4);
 //		agentList.add(ag);
-//		
+//		*/
 		
 		/*********
 		 * AGENT Collect 1

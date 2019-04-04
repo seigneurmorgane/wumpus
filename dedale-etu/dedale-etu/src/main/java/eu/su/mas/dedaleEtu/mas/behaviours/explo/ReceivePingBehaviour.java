@@ -15,12 +15,15 @@ public class ReceivePingBehaviour extends SimpleBehaviour{
 	private static final long serialVersionUID = 8567659731496787061L;
 	private boolean finished = false;
 	private int trans = 3;
-	private MapRepresentation myMap = null;
+	private MapRepresentation myMap;
 	private List<String> openNodes = new ArrayList<String>();
-	public ReceivePingBehaviour(final AbstractDedaleAgent myagent,MapRepresentation myMap, List<String> openNodes) {
+	private List<String> path;
+	
+	public ReceivePingBehaviour(final AbstractDedaleAgent myagent,MapRepresentation myMap, List<String> openNodes,List<String> path) {
 		super(myagent);
 		this.myMap = myMap;
 		this.openNodes = openNodes;
+		this.path = path;
 	}
 	
 	@Override
@@ -40,11 +43,6 @@ public class ReceivePingBehaviour extends SimpleBehaviour{
 			this.trans = 1;
 			this.finished=true;
 			System.out.println(this.openNodes.size());
-			String test = this.openNodes.get(0);
-			String moi = ((AbstractDedaleAgent)this.myAgent).getCurrentPosition();
-			if (this.myMap == null)
-				System.out.println("c donc ca");
-			List<String> path = this.myMap.getShortestPath(moi, test);
 			String nextNode = path.get(0);
 			if( ! ((AbstractDedaleAgent)this.myAgent).moveTo(nextNode)) {
 				this.trans = 3;

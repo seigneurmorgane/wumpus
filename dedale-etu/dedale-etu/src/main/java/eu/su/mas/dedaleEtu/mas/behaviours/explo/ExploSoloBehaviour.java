@@ -39,21 +39,20 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 	 */
 	private MapRepresentation myMap;
 
-	private List<Couple<String,List<Couple<Observation,Integer>>>> closedNodes = new ArrayList<Couple<String,List<Couple<Observation,Integer>>>>();
-	private List<Couple<String,List<Couple<Observation,Integer>>>> otherClosedNodes = new ArrayList<Couple<String,List<Couple<Observation,Integer>>>>();
-	private List<String> openNodes = new ArrayList<String>();
-	private List<Couple<String,String>> Edges = new ArrayList<Couple<String,String>>();
-	private List<Couple<String,String>> otherEdges = new ArrayList<Couple<String,String>>();
+	private List<Couple<String,List<Couple<Observation,Integer>>>> closedNodes;
+	private List<Couple<String,List<Couple<Observation,Integer>>>> otherClosedNodes;
+	private List<String> openNodes;
+	private List<Couple<String,String>> Edges;
+	private List<Couple<String,String>> otherEdges;
+	private List<String> path;
 
-
-
-	public ExploSoloBehaviour(final AbstractDedaleAgent myagent, MapRepresentation myMap,List<Couple<String,List<Couple<Observation,Integer>>>> closedNodes,List<Couple<String,List<Couple<Observation,Integer>>>> otherClosedNodes, List<Couple<String,String>> edge,List<Couple<String,String>> otherEdge, List<String> openNodes) {
+	public ExploSoloBehaviour(final AbstractDedaleAgent myagent, MapRepresentation myMap,List<Couple<String,List<Couple<Observation,Integer>>>> closedNodes,List<Couple<String,List<Couple<Observation,Integer>>>> otherClosedNodes, List<Couple<String,String>> edge,List<Couple<String,String>> otherEdge, List<String> openNodes,List<String> path) {
 		super(myagent);
 		this.myMap=myMap;
 		this.openNodes=openNodes;
 		this.closedNodes=closedNodes;
 		this.Edges = edge;
-
+		this.path = path;
 		this.otherClosedNodes = otherClosedNodes;
 		this.otherEdges = otherEdge;
 	}
@@ -67,7 +66,7 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 		//0) Retrieve the current position
 		String myPosition=((AbstractDedaleAgent)this.myAgent).getCurrentPosition();
 		
-		Iterator<Couple<String,List<Couple<Observation,Integer>>>> iter = this.closedNodes.iterator();
+		Iterator<Couple<String,List<Couple<Observation,Integer>>>> iter = this.otherClosedNodes.iterator();
 		while(iter.hasNext()) {
 			Couple<String,List<Couple<Observation,Integer>>> node = iter.next();
 			if(!this.closedNodesContains(node.getLeft())) {
@@ -168,6 +167,7 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 				}
 				if( ! ((AbstractDedaleAgent)this.myAgent).moveTo(nextNode)) {
 					finished=true;
+					this.path = myMap.getShortestPath(((AbstractDedaleAgent)this.myAgent).getCurrentPosition(), this.openNodes.get(0));
 					this.trans=2;
 					System.out.println("Exploration STOP");
 				}

@@ -60,21 +60,21 @@ public final class ConfigurationFile {
 	 * Not null when the environment is loaded; should be null if the environment is generated or already online
 	 */
 	//public static String INSTANCE_TOPOLOGY="resources/map2018-topology";
-	public static String INSTANCE_TOPOLOGY="resources/mapInterlocking2-topology";
-	//public static String INSTANCE_TOPOLOGY=null;
+	//public static String INSTANCE_TOPOLOGY="resources/mapInterlocking2-topology";
+	public static String INSTANCE_TOPOLOGY=null;
 	
 	/**
 	 * Not null when the environment is loaded; should be null if the environment is generated or already online
 	 */
 	//public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/map2018-elements";
-	//public static String INSTANCE_CONFIGURATION_ELEMENTS=null;
-	public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/mapInterlocking2-elements";
+	public static String INSTANCE_CONFIGURATION_ELEMENTS=null;
+	//public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/mapInterlocking2-elements";
 	/**
 	 * Must'nt be null as it describes the agents capabilities on the map
 	 */
 	//public static String INSTANCE_CONFIGURATION_ENTITIES="resources/map2018-entities2";
-	//public static String INSTANCE_CONFIGURATION_ENTITIES="resources/monoAgent-entities";
-	public static String INSTANCE_CONFIGURATION_ENTITIES="resources/mapInterlocking2-entities";
+	public static String INSTANCE_CONFIGURATION_ENTITIES="resources/monoAgent-entities";
+	//public static String INSTANCE_CONFIGURATION_ENTITIES="resources/mapInterlocking2-entities";
 	
 	/************************************
 	 * 
@@ -87,7 +87,7 @@ public final class ConfigurationFile {
 	/**
 	 * Parameter used to generate the environment 
 	 */
-	public static Integer ENVIRONMENT_SIZE=12;
+	public static Integer ENVIRONMENT_SIZE=2;
 	
 	/**
 	 * Parameter used to perceive the wumpus trough its smell
@@ -95,7 +95,7 @@ public final class ConfigurationFile {
 	public static final Integer DEFAULT_DETECTION_RADIUS = 1;
 	
 	/**true if a grid environment should be generated, false otherwise (A dogoronev env is generated)**/
-	public static boolean ENVIRONMENTisGRID=false;
+	public static boolean ENVIRONMENTisGRID=true;
 	public static boolean ACTIVE_WELL=false;
 	public static boolean ACTIVE_GOLD=true;
 	public static boolean ACTIVE_DIAMOND=true;

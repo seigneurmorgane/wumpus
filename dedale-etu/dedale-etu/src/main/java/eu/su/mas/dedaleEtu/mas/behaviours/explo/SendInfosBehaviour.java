@@ -25,29 +25,23 @@ public class SendInfosBehaviour extends OneShotBehaviour{
 	 */
 	private static final long serialVersionUID = -3429744247766338802L;
 	private List<Couple<String,List<Couple<Observation,Integer>>>> closedNodes;
-	private List<String> openNodes = new ArrayList<String>();
+	private List<String> openNodes;
 	private List<Integer> comp = new ArrayList<Integer>();
-	private List<Couple<String,String>> Edges = new ArrayList<Couple<String,String>>();
+	private List<Couple<String,String>> Edges;
+	private List<String> path;
 
-	public SendInfosBehaviour(final AbstractDedaleAgent myagent, MapRepresentation myMap, List<Couple<String,List<Couple<Observation,Integer>>>> closedNodes, List<Couple<String,String>> Edges, List<String> openNodes) {
+	public SendInfosBehaviour(final AbstractDedaleAgent myagent, MapRepresentation myMap, List<Couple<String,List<Couple<Observation,Integer>>>> closedNodes, List<Couple<String,String>> Edges, List<String> openNodes,List<String> path) {
 		super(myagent);
 		this.closedNodes = closedNodes;
 		this.openNodes = openNodes;
 		this.comp.add(0);
 		this.Edges = Edges;
-		try {
-			List<String> path = myMap.getShortestPath(myagent.getCurrentPosition(),openNodes.get(0));
-			this.comp.add(path.size());
-		} catch(Exception e) {
-			e.printStackTrace();
-			Random rand = new Random();
-			this.comp.add(rand.nextInt()*1000+rand.nextInt()*100+rand.nextInt()*10+rand.nextInt());
-		}
-
+		this.path = path;
 	}
 
 	@Override
 	public void action() {
+		this.comp.add(path.size());
 		System.out.println(this.myAgent.getLocalName()+" my open nodes : "+this.openNodes);
 		System.out.println("mes noeuds fermés à envoyer :"+closedNodes);
 		DFAgentDescription dfd = new DFAgentDescription();

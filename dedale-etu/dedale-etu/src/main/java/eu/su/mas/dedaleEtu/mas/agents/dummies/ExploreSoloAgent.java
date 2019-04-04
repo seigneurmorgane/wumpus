@@ -86,6 +86,7 @@ public class ExploreSoloAgent extends AbstractDedaleAgent {
 		fsm.registerTransition("Dep", "SPing",2);
 		fsm.registerTransition("SPing", "RPing", 3);
 		fsm.registerTransition("RPing", "RPing", 3);	
+		fsm.registerTransition("RPing", "Dep", 1);
 		/*fsm.registerTransition("RPing", "SNode", 4);
 		fsm.registerTransition("SNode", "RNode", 5);
 		fsm.registerTransition("RNode", "RNode", 5);

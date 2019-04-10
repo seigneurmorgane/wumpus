@@ -40,13 +40,24 @@ public class ReceivePingBehaviour extends SimpleBehaviour{
 			this.trans = 4;
 			System.out.println(this.myAgent.getLocalName()+" <----Ping received from "+msg.getSender().getLocalName()+" ,content= "+msg.getContent());
 		}else{
-			this.trans = 1;
+			/*this.trans = 1;
 			this.finished=true;
 			System.out.println(this.openNodes.size());
-			String nextNode = path.get(0);
+			String nextNode = null;
+			if (path.size()>0) {
+				nextNode = path.get(0);
+				System.out.println("go to"+nextNode);
+			}
+			else {
+				System.out.println("no path !");
+				nextNode = ((AbstractDedaleAgent)this.myAgent).observe().get(0).getLeft();
+
+				System.out.println("go to"+nextNode);
+			}
 			if( ! ((AbstractDedaleAgent)this.myAgent).moveTo(nextNode)) {
 				this.trans = 3;
-			}
+			}*/
+			this.trans=3;
 		}
 	}
 

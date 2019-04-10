@@ -48,7 +48,8 @@ public class ReceiveInfosBehaviour extends SimpleBehaviour {
 			List<Integer> comp = new ArrayList<Integer>();
 
 			try {
-				if (msg.getClass().getSimpleName().equals("Couple<List<Couple<String,List<Couple<Observation,Integer>>>>,Couple<List<Couple<String,String>>,List<Integer>>>")) {
+				System.out.println("j'essaie de vérifier le type");
+				if (msg.getContentObject().getClass().getSimpleName().equals("Couple")) {
 					Couple<List<Couple<String, List<Couple<Observation, Integer>>>>, Couple<List<Couple<String, String>>, List<Integer>>> infos = (Couple<List<Couple<String, List<Couple<Observation, Integer>>>>, Couple<List<Couple<String, String>>, List<Integer>>>) (msg.getContentObject());
 					this.otherClosedNodes = infos.getLeft();
 					this.otherEdges = infos.getRight().getLeft();
@@ -58,11 +59,12 @@ public class ReceiveInfosBehaviour extends SimpleBehaviour {
 
 					System.out.println("taille des infos sur les capacités -> " + comp.size());
 					System.out.println("le chemin de l'autre explo = " + comp.get(1));
+					List<Couple<String, List<Couple<Observation, Integer>>>> lobs = ((AbstractDedaleAgent) this.myAgent)
+							.observe();
 					// pour savoir qui a la priorité
 					if (comp.get(0) > 0 || (comp.get(0) == 0 && Math.abs(comp.get(1)) < this.path.size())) {
 						String dest = this.path.get(0);
-						List<Couple<String, List<Couple<Observation, Integer>>>> lobs = ((AbstractDedaleAgent) this.myAgent)
-								.observe();
+						
 						if (lobs.size() > 0) {
 							String nextNode = (lobs.get(0)).getLeft();
 							int i = 1;
@@ -79,10 +81,15 @@ public class ReceiveInfosBehaviour extends SimpleBehaviour {
 							this.trans = 8;
 							System.out.println("Exploration successufully done, behaviour removed.");
 						}
+					} else {
+						if(path.size()>0) 
+							((AbstractDedaleAgent) this.myAgent).moveTo(this.path.get(0));
+						else
+							((AbstractDedaleAgent) this.myAgent).moveTo(lobs.get(0).getLeft());
 					}
+						
 				}
 			} catch (UnreadableException e) {
-				System.out.println("pouet pouet");
 				e.printStackTrace();
 			}
 

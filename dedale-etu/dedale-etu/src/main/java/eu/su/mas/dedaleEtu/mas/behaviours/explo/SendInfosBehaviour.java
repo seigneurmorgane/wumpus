@@ -41,7 +41,12 @@ public class SendInfosBehaviour extends OneShotBehaviour{
 
 	@Override
 	public void action() {
-		this.comp.add(path.size());
+		if(path.size() > 0)
+			this.comp.add(path.size());
+		else {
+			Random rand = new Random();
+			this.comp.add(Math.abs(rand.nextInt()*100+rand.nextInt()*10+rand.nextInt()));
+		}
 		System.out.println(this.myAgent.getLocalName()+" my open nodes : "+this.openNodes);
 		System.out.println("mes noeuds fermés à envoyer :"+closedNodes);
 		DFAgentDescription dfd = new DFAgentDescription();

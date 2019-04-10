@@ -66,7 +66,7 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 		//0) Retrieve the current position
 		String myPosition=((AbstractDedaleAgent)this.myAgent).getCurrentPosition();
 		
-		Iterator<Couple<String,List<Couple<Observation,Integer>>>> iter = this.otherClosedNodes.iterator();
+		/*Iterator<Couple<String,List<Couple<Observation,Integer>>>> iter = this.otherClosedNodes.iterator();
 		while(iter.hasNext()) {
 			Couple<String,List<Couple<Observation,Integer>>> node = iter.next();
 			if(!this.closedNodesContains(node.getLeft())) {
@@ -78,22 +78,45 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 				this.myMap.addNode(node.getLeft(),MapAttribute.closed);
 			}
 			this.otherClosedNodes.remove(node);
-		}
+		}*/
 		
 		/*this.closedNodes = this.cleanClosedNodes(closedNodes, otherClosedNodes);
 		this.otherClosedNodes = new ArrayList<>();*/
+		
+		if(this.otherClosedNodes.size() > 0) {
+			for(Couple<String,List<Couple<Observation,Integer>>> node : this.otherClosedNodes) {
+				if(!this.closedNodesContains(node.getLeft())) {
+					this.closedNodes.add(node);
+					if(this.openNodes.contains(node.getLeft())) {
+						this.openNodes.remove(node.getLeft());
+					}
+					this.myMap.addNode(node.getLeft(),MapAttribute.closed);
+				}
+				this.otherClosedNodes.remove(node);
+			}
+		}
 
-		Iterator<Couple<String,String>> it = this.otherEdges.iterator();
+		/*Iterator<Couple<String,String>> it = this.otherEdges.iterator();
 		while(it.hasNext()) {
 			Couple<String,String> edge = it.next();
 			if(!this.Edges.contains(edge)) {
 				this.Edges.add(edge);
 			}
 			this.otherEdges.remove(edge);
-		}
+		}*/
+		
 		/*Couple<List<Couple<String,String>>,List<Couple<String,String>>> tmpEdges = cleanEdges(this.Edges,this.otherEdges);
 		this.Edges = tmpEdges.getLeft();
 		this.otherEdges = tmpEdges.getRight();*/
+		
+		if(this.otherEdges.size() > 0) {
+			for(Couple<String,String> edge : this.otherEdges) {
+				if(!this.Edges.contains(edge)) {
+					this.Edges.add(edge);
+				}
+				this.otherEdges.remove(edge);
+			}
+		}
 
 
 		if (myPosition!=null){
@@ -105,20 +128,21 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 			 * Just added here to let you see what the agent is doing, otherwise he will be too quick
 			 */
 			try {
-				this.myAgent.doWait(500);
+				this.myAgent.doWait(1000);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 
 			//1) remove the current node from openlist and add it to closedNodes.
-			this.closedNodes.add(new Couple<>(myPosition,lobs.get(0).getRight()));
+			if(!this.closedNodesContains(myPosition))
+				this.closedNodes.add(new Couple<>(myPosition,lobs.get(0).getRight()));
 			this.openNodes.remove(myPosition);
 
 			this.myMap.addNode(myPosition,MapAttribute.closed);
 
 			//2) get the surrounding nodes and, if not in closedNodes, add them to open nodes.
 			String nextNode=null;
-			/*Iterator<Couple<String,List<Couple<Observation,Integer>>>>*/ iter=lobs.iterator();
+			Iterator<Couple<String,List<Couple<Observation,Integer>>>> iter=lobs.iterator();
 			while(iter.hasNext()){
 				Couple<String, List<Couple<Observation, Integer>>> nodeId=iter.next();
 				if (!this.closedNodesContains(nodeId.getLeft())){
@@ -146,6 +170,12 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 				System.out.print(node + " ");
 			}
 			System.out.println();
+			
+			System.out.println("Path");
+			for (String p : this.path)
+				System.out.println(p+" ");
+			System.out.println();
+			
 
 
 			//3) while openNodes is not empty, continues.

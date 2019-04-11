@@ -195,13 +195,13 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 				if (nextNode==null){
 					//no directly accessible openNode
 					//chose one, compute the path and take the first step.
+					this.path = myMap.getShortestPath(((AbstractDedaleAgent)this.myAgent).getCurrentPosition(), this.openNodes.get(0));
 					System.out.println(this.myAgent.getLocalName()+" doesn't know where to go ...");
-					nextNode=this.myMap.getShortestPath(myPosition, this.openNodes.get(0)).get(0);
-					System.out.println("--> -->"+ this.myMap.getShortestPath(myPosition, this.openNodes.get(0)));
+					nextNode=this.path.get(0);
+					System.out.println("--> -->"+ nextNode);
 				}
 				if( ! ((AbstractDedaleAgent)this.myAgent).moveTo(nextNode)) {
 					finished=true;
-					this.path = myMap.getShortestPath(((AbstractDedaleAgent)this.myAgent).getCurrentPosition(), this.openNodes.get(0));
 					this.trans=2;
 					System.out.println("Exploration STOP");
 				}

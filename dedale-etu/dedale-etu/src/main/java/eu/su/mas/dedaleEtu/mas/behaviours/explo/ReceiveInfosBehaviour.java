@@ -65,8 +65,9 @@ public class ReceiveInfosBehaviour extends SimpleBehaviour {
 					System.out.println("le chemin de l'autre explo = " + comp.get(1));
 					List<Couple<String, List<Couple<Observation, Integer>>>> lobs = ((AbstractDedaleAgent) this.myAgent)
 							.observe();
+					String myPosition=((AbstractDedaleAgent)this.myAgent).getCurrentPosition();
 					// pour savoir qui a la priorité
-					if (comp.get(0) > 0 || (comp.get(0) == 0 && Math.abs(comp.get(1)) < this.path.size()) 
+					/*if (comp.get(0) > 0 || (comp.get(0) == 0 && Math.abs(comp.get(1)) < this.path.size()) 
 							|| (comp.get(0) == 0 && Math.abs(comp.get(1)) == this.path.size() && this.nom_corres.compareTo(this.myAgent.getLocalName())<0)) {
 						System.out.println(this.myAgent.getLocalName()+" doit laisser passer");
 						String dest = this.path.get(0);
@@ -96,12 +97,64 @@ public class ReceiveInfosBehaviour extends SimpleBehaviour {
 							((AbstractDedaleAgent) this.myAgent).moveTo(this.path.get(0));
 						else
 							((AbstractDedaleAgent) this.myAgent).moveTo(lobs.get(0).getLeft());*/
-						this.myAgent.doWait(500);
+						/*this.myAgent.doWait(500);
 						this.trans = 1;
 						if(this.path.get(0).equals(((AbstractDedaleAgent)this.myAgent).getCurrentPosition()))
 							System.out.println("je veux aller la ou je suis déjà ...");
 						((AbstractDedaleAgent) this.myAgent).moveTo(this.path.get(0));
 						//this.trans=1;
+					}*/
+					
+					String nextNode = null;
+					//deuxième essai : pour donner la priorité à un des deux agents bloqués
+					if(comp.get(0)> 0 || (comp.get(0)==0 && comp.get(1)> this.path.size()) || 
+							(comp.get(0) == 0 && comp.get(1) == this.path.size() && this.nom_corres.compareTo(this.myAgent.getLocalName())<0)) {
+						//dans ce cas là, l'agent courant n'a donc pas la priorité et doit changer de chemin
+						this.myAgent.doWait(500);
+						
+						//on veut être sur que l'agent ne fait pas du "sur place"
+						if(path.size()>0 && path.get(0).equals(myPosition)) {
+							path.remove(myPosition);
+						}
+						
+						// cas normal (path n'est pas vide) :
+						if (path.size() > 0) {
+						// on suppose que l'agent essayait de se rendre en path.get(0)
+							int i = 1;
+							nextNode = lobs.get(0).getLeft();
+							while(i < lobs.size() && (nextNode.equals(myPosition) || nextNode.equals(path.get(0)))) {
+								nextNode = lobs.get(i).getLeft();
+								i++;
+							}
+						} else {
+							System.out.println("bizarrement, "+this.myAgent.getLocalName()+" n'a pas de chemin prédéfini ...");
+							nextNode = lobs.get(0).getLeft();
+							int i = 0;
+							while(i < lobs.size() && (nextNode.equals(myPosition) )) {
+								nextNode = lobs.get(i).getLeft();
+								i++;
+							}
+						}
+						System.out.println(this.myAgent.getLocalName()+"("+myPosition+") n'a pas la priorité et veut aller en "+nextNode);
+					}
+					else {
+						this.myAgent.doWait(750);
+						// dans ce cas là, l'agent courant a la priorité
+						//cas normal (path nn vide)
+						if(path.size()>0) {
+							nextNode = this.path.get(0);
+						} else {
+							System.out.println("bizarrement, "+this.myAgent.getLocalName()+" n'a pas de chemin prédéfini ...");
+							nextNode=lobs.get(1).getLeft();
+						}
+						System.out.println(this.myAgent.getLocalName()+"("+myPosition+") a la priorité et veut aller en "+nextNode);
+					}
+					this.trans = 1;
+					this.path.clear();
+					this.path.add(nextNode);
+					if(!((AbstractDedaleAgent)this.myAgent).moveTo(nextNode)) {
+						System.out.println(this.myAgent.getLocalName()+" n'arrive pas à bouger !");
+						this.trans = 2;
 					}
 						
 				}

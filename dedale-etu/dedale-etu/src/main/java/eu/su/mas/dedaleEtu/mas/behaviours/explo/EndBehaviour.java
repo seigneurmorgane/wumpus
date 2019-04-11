@@ -15,5 +15,9 @@ public class EndBehaviour extends OneShotBehaviour {
 	public void action() {
 		System.out.println("Exploration terminer");
 	}
+	
+	public int onEnd() {
+		return 1;
+	}
 
 }

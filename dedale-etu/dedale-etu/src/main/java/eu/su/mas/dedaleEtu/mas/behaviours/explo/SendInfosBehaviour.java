@@ -34,13 +34,15 @@ public class SendInfosBehaviour extends OneShotBehaviour{
 		super(myagent);
 		this.closedNodes = closedNodes;
 		this.openNodes = openNodes;
-		this.comp.add(0);
 		this.Edges = Edges;
 		this.path = path;
+		this.comp = new ArrayList<Integer>();
 	}
 
 	@Override
 	public void action() {
+		this.comp = new ArrayList<Integer>();
+		this.comp.add(0);
 		if(path.size() > 0)
 			this.comp.add(path.size());
 		else {

@@ -40,7 +40,7 @@ public class SendPingBehaviour extends OneShotBehaviour {
 						msg.addReceiver(new AID(dfd_res.getName().getLocalName(), AID.ISLOCALNAME));
 						
 						// 2° compute the random value
-						msg.setContent("Ping");
+						msg.setContent("a"+this.myAgent.getLocalName());
 						((AbstractDedaleAgent) this.myAgent).sendMessage(msg);
 
 						System.out.println(this.myAgent.getLocalName() + " sent to " + dfd_res.getName().getLocalName()

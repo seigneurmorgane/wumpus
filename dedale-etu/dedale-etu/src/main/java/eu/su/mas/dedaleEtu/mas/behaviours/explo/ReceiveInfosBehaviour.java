@@ -24,32 +24,36 @@ public class ReceiveInfosBehaviour extends SimpleBehaviour {
 	private List<String> path;
 	private boolean finished = false;
 	private int trans = 5;
+	private String nom_corres;
 
 	public ReceiveInfosBehaviour(final AbstractDedaleAgent myagent,
 			List<Couple<String, List<Couple<Observation, Integer>>>> otherClosedNodes,
-			List<Couple<String, String>> otherEdges, List<String> openNodes, List<String> path) {
+			List<Couple<String, String>> otherEdges, List<String> openNodes, List<String> path, String nom_corres) {
 		super(myagent);
 		this.otherClosedNodes = otherClosedNodes;
 		this.otherEdges = otherEdges;
 		this.openNodes = openNodes;
 		this.path = path;
+		this.nom_corres = nom_corres;
 	}
 
 	@Override
 	public void action() {
+		this.myAgent.doWait(1000);
+		System.out.println(this.myAgent.getLocalName()+" attend les infos");
 		// 1) receive the message
 		final MessageTemplate msgTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
 
 		final ACLMessage msg = this.myAgent.receive(msgTemplate);
-		if (msg != null) {
+		if (msg != null && ((String)(msg.getContent())).charAt(0) != 'a') {
 			System.out.println(
 					this.myAgent.getLocalName() + " <----Result received from " + msg.getSender().getLocalName());
-			this.finished = true;
 			List<Integer> comp = new ArrayList<Integer>();
 
 			try {
 				System.out.println("j'essaie de vérifier le type");
 				if (msg.getContentObject().getClass().getSimpleName().equals("Couple")) {
+					this.finished=true;
 					Couple<List<Couple<String, List<Couple<Observation, Integer>>>>, Couple<List<Couple<String, String>>, List<Integer>>> infos = (Couple<List<Couple<String, List<Couple<Observation, Integer>>>>, Couple<List<Couple<String, String>>, List<Integer>>>) (msg.getContentObject());
 					this.otherClosedNodes = infos.getLeft();
 					this.otherEdges = infos.getRight().getLeft();
@@ -62,17 +66,20 @@ public class ReceiveInfosBehaviour extends SimpleBehaviour {
 					List<Couple<String, List<Couple<Observation, Integer>>>> lobs = ((AbstractDedaleAgent) this.myAgent)
 							.observe();
 					// pour savoir qui a la priorité
-					if (comp.get(0) > 0 || (comp.get(0) == 0 && Math.abs(comp.get(1)) < this.path.size())) {
+					if (comp.get(0) > 0 || (comp.get(0) == 0 && Math.abs(comp.get(1)) < this.path.size()) 
+							|| (comp.get(0) == 0 && Math.abs(comp.get(1)) == this.path.size() && this.nom_corres.compareTo(this.myAgent.getLocalName())<0)) {
+						System.out.println(this.myAgent.getLocalName()+" doit laisser passer");
 						String dest = this.path.get(0);
 						
 						if (lobs.size() > 0) {
 							String nextNode = (lobs.get(0)).getLeft();
 							int i = 1;
-							while (nextNode.equals(dest) && i < lobs.size()) {
+							while ( i < lobs.size() && (nextNode.equals(((AbstractDedaleAgent)this.myAgent).getCurrentPosition()) || nextNode.equals(dest))) {
 								nextNode = (lobs.get(i)).getLeft();
 								i++;
 							}
-
+							System.out.println(this.myAgent.getLocalName()+" veut aller en "+nextNode);
+							this.myAgent.doWait(500);
 							if (!((AbstractDedaleAgent) this.myAgent).moveTo(nextNode)) {
 								System.out.println(this.myAgent.getLocalName() + " couldn't move ! -> go to ping");
 								this.trans = 2;
@@ -82,10 +89,19 @@ public class ReceiveInfosBehaviour extends SimpleBehaviour {
 							System.out.println("Exploration successufully done, behaviour removed.");
 						}
 					} else {
-						if(path.size()>0) 
+						System.out.println(this.myAgent.getLocalName()+" a la priorité");
+						System.out.println(this.myAgent.getLocalName()+" veut aller en "+this.path.get(0));
+						//this.myAgent.doWait(1000);
+						/*if(path.size()>0) 
 							((AbstractDedaleAgent) this.myAgent).moveTo(this.path.get(0));
 						else
-							((AbstractDedaleAgent) this.myAgent).moveTo(lobs.get(0).getLeft());
+							((AbstractDedaleAgent) this.myAgent).moveTo(lobs.get(0).getLeft());*/
+						this.myAgent.doWait(500);
+						this.trans = 1;
+						if(this.path.get(0).equals(((AbstractDedaleAgent)this.myAgent).getCurrentPosition()))
+							System.out.println("je veux aller la ou je suis déjà ...");
+						((AbstractDedaleAgent) this.myAgent).moveTo(this.path.get(0));
+						//this.trans=1;
 					}
 						
 				}

@@ -33,6 +33,7 @@ public class ExploreSoloAgent extends AbstractDedaleAgent {
 	private List<Couple<String,String>> Edges = new ArrayList<Couple<String,String>>();
 	private List<Couple<String,String>> otherEdges = new ArrayList<Couple<String,String>>();
 	private List<String> path = new ArrayList<String>();
+	private String nom_corres = "";
 	/**
 	 * This method is automatically called when "agent".start() is executed.
 	 * Consider that Agent is launched for the first time. 1) set the agent
@@ -69,7 +70,7 @@ public class ExploreSoloAgent extends AbstractDedaleAgent {
 		fsm.registerFirstState(new InitDFBehaviour(this, "Explo"), "DF");
 		fsm.registerState(new ExploSoloBehaviour(this, this.myMap, this.closedNodes ,this.otherClosedNodes,this.Edges,this.otherEdges,this.openNodes,this.path), "Dep");
 		fsm.registerState(new SendPingBehaviour(this), "SPing");
-		fsm.registerState(new ReceivePingBehaviour(this,this.myMap, this.openNodes,this.path), "RPing");
+		fsm.registerState(new ReceivePingBehaviour(this,this.myMap, this.openNodes,this.path,this.nom_corres), "RPing");
 		/*fsm.registerState(new SendClosedNodeBehaviour(this, this.closedNodes), "SNode");
 		fsm.registerState(new ReceiveNodeClosedBehaviour(this, this.otherClosedNodes), "RNode");
 		fsm.registerState(new SendEdgeBehaviour(this,this.edge), "SEdge");
@@ -77,8 +78,9 @@ public class ExploreSoloAgent extends AbstractDedaleAgent {
 		fsm.registerState(new IsBlockedExploBehaviour(this,this.myMap,this.openNodes),"IBlock");
 		fsm.registerState(new DeblockExploBehaviour(this,this.myMap,this.openNodes,this.closedNodes),"DBlock");*/
 		fsm.registerState(new SendInfosBehaviour(this,this.myMap,this.closedNodes,this.Edges,this.openNodes,this.path),"SInfos");
-		fsm.registerState(new ReceiveInfosBehaviour(this,this.otherClosedNodes,this.otherEdges,this.openNodes,this.path),"RInfos");
-		fsm.registerLastState(new EndBehaviour(this), "End");
+		fsm.registerState(new ReceiveInfosBehaviour(this,this.otherClosedNodes,this.otherEdges,this.openNodes,this.path,this.nom_corres),"RInfos");
+		//fsm.registerLastState(new EndBehaviour(this), "End");
+		fsm.registerState(new EndBehaviour(this), "End");
 		
 		
 		// definition des transaction
@@ -107,6 +109,7 @@ public class ExploreSoloAgent extends AbstractDedaleAgent {
 		fsm.registerTransition("RInfos", "Dep",1);
 		fsm.registerTransition("RInfos", "SPing",2);
 		fsm.registerTransition("Dep", "End",8);
+		fsm.registerTransition("End", "Dep",1);
 		//fsm.registerTransition(source, event);
 
 		lb.add(fsm);

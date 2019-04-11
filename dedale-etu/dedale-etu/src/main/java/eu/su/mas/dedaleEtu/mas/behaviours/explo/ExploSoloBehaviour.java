@@ -59,7 +59,7 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 
 	@Override
 	public void action() {
-		System.out.println(this.myAgent.getLocalName()+" avance !");
+		//System.out.println(this.myAgent.getLocalName()+" avance !");
 		if(this.myMap==null)
 			this.myMap= new MapRepresentation();
 
@@ -155,7 +155,11 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 						this.myMap.addEdge(myPosition, nodeId.getLeft());
 						this.Edges.add(new Couple<>(myPosition, nodeId.getLeft()));
 					}
-					if (nextNode==null) nextNode=nodeId.getLeft();
+					if (nextNode==null) {
+						nextNode=nodeId.getLeft();
+						this.path.clear();
+						this.path.add(nodeId.getLeft());
+					}
 				}
 			}
 

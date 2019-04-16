@@ -33,7 +33,7 @@ public class ExploreSoloAgent extends AbstractDedaleAgent {
 	private List<Couple<String,String>> Edges = new ArrayList<Couple<String,String>>();
 	private List<Couple<String,String>> otherEdges = new ArrayList<Couple<String,String>>();
 	private List<String> path = new ArrayList<String>();
-	private String nom_corres = "";
+	private List<String> nom_corres = new ArrayList<String>();
 	/**
 	 * This method is automatically called when "agent".start() is executed.
 	 * Consider that Agent is launched for the first time. 1) set the agent
@@ -77,7 +77,7 @@ public class ExploreSoloAgent extends AbstractDedaleAgent {
 		fsm.registerState(new ReceiveEdgeBehaviour(this,this.otherEdge), "REdge");
 		fsm.registerState(new IsBlockedExploBehaviour(this,this.myMap,this.openNodes),"IBlock");
 		fsm.registerState(new DeblockExploBehaviour(this,this.myMap,this.openNodes,this.closedNodes),"DBlock");*/
-		fsm.registerState(new SendInfosBehaviour(this,this.myMap,this.closedNodes,this.Edges,this.openNodes,this.path),"SInfos");
+		fsm.registerState(new SendInfosBehaviour(this,this.myMap,this.closedNodes,this.Edges,this.openNodes,this.path,this.nom_corres),"SInfos");
 		fsm.registerState(new ReceiveInfosBehaviour(this,this.otherClosedNodes,this.otherEdges,this.openNodes,this.path,this.nom_corres),"RInfos");
 		//fsm.registerLastState(new EndBehaviour(this), "End");
 		fsm.registerState(new EndBehaviour(this), "End");

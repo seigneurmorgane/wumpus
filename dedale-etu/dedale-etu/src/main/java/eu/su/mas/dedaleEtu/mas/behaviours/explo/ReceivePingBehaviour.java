@@ -20,9 +20,9 @@ public class ReceivePingBehaviour extends SimpleBehaviour{
 	private List<String> openNodes = new ArrayList<String>();
 	private List<String> path;
 	private int nb = 0;
-	private String nom_corres;
+	private List<String> nom_corres;
 	
-	public ReceivePingBehaviour(final AbstractDedaleAgent myagent,MapRepresentation myMap, List<String> openNodes,List<String> path, String nom_corres) {
+	public ReceivePingBehaviour(final AbstractDedaleAgent myagent,MapRepresentation myMap, List<String> openNodes,List<String> path, List<String> nom_corres) {
 		super(myagent);
 		this.myMap = myMap;
 		this.openNodes = openNodes;
@@ -44,7 +44,9 @@ public class ReceivePingBehaviour extends SimpleBehaviour{
 		final ACLMessage msg = this.myAgent.receive(msgTemplate);
 		try {
 			if (msg != null && ((String)(msg.getContent())).charAt(0) == 'a') {
-				this.nom_corres = msg.getContent().substring(1);
+				this.nom_corres.clear();
+				this.nom_corres.add(msg.getContent().substring(1));
+				System.out.println("correspondant : "+this.nom_corres.get(0));
 				this.finished = true;
 				this.trans = 4;
 				this.nb = 0;
@@ -120,7 +122,7 @@ public class ReceivePingBehaviour extends SimpleBehaviour{
 				this.finished=true;
 				System.out.println(this.myAgent.getLocalName()+"("+((AbstractDedaleAgent)this.myAgent).getCurrentPosition()+") va essayer d'aller en "+nextNode);
 				if(!((AbstractDedaleAgent)this.myAgent).moveTo(nextNode)) {
-					System.out.println("je n'arrive pas à bouger !!!");
+					System.out.println("je n'arrive pas à bouger !!! dsl "+this.nom_corres);
 					this.trans = 3;
 				}
 				

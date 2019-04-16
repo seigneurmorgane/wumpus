@@ -29,14 +29,16 @@ public class SendInfosBehaviour extends OneShotBehaviour{
 	private List<Integer> comp = new ArrayList<Integer>();
 	private List<Couple<String,String>> Edges;
 	private List<String> path;
+	private List<String> nom_corres;
 
-	public SendInfosBehaviour(final AbstractDedaleAgent myagent, MapRepresentation myMap, List<Couple<String,List<Couple<Observation,Integer>>>> closedNodes, List<Couple<String,String>> Edges, List<String> openNodes,List<String> path) {
+	public SendInfosBehaviour(final AbstractDedaleAgent myagent, MapRepresentation myMap, List<Couple<String,List<Couple<Observation,Integer>>>> closedNodes, List<Couple<String,String>> Edges, List<String> openNodes,List<String> path,List<String> nom_corres) {
 		super(myagent);
 		this.closedNodes = closedNodes;
 		this.openNodes = openNodes;
 		this.Edges = Edges;
 		this.path = path;
 		this.comp = new ArrayList<Integer>();
+		this.nom_corres = nom_corres;
 	}
 
 	@Override
@@ -51,7 +53,7 @@ public class SendInfosBehaviour extends OneShotBehaviour{
 		}
 		System.out.println(this.myAgent.getLocalName()+" my open nodes : "+this.openNodes);
 		System.out.println("mes noeuds fermés à envoyer :"+closedNodes);
-		DFAgentDescription dfd = new DFAgentDescription();
+		/*DFAgentDescription dfd = new DFAgentDescription();
 		ServiceDescription sd = new ServiceDescription();
 		sd.setType("Explo");
 		dfd.addServices(sd);
@@ -83,7 +85,28 @@ public class SendInfosBehaviour extends OneShotBehaviour{
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}*/
+		if(this.nom_corres.size()>0) {
+			// 1°Create the message
+			final ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+			msg.setSender(this.myAgent.getAID());
+			msg.addReceiver(new AID(this.nom_corres.get(0), AID.ISLOCALNAME));
+
+			// 2° compute the random value
+
+			Couple<List<Couple<String,String>>,List<Integer>> tmp = new Couple<>(Edges,comp);
+			Couple<List<Couple<String,List<Couple<Observation,Integer>>>>,Couple<List<Couple<String,String>>,List<Integer>>> infos = new Couple<>(this.closedNodes,tmp);
+
+			try {
+				msg.setContentObject(
+						(Couple<List<Couple<String, List<Couple<Observation, Integer>>>>, Couple<List<Couple<String, String>>, List<Integer>>>) infos);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			((AbstractDedaleAgent) this.myAgent).sendMessage(msg);
 		}
+
 
 	}
 

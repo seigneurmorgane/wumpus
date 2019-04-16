@@ -61,11 +61,14 @@ public class WalkBehaviour extends SimpleBehaviour {
 
 	@Override
 	public void action() {
+
+		// création de la map
 		if (this.myMap == null) {
 			this.myMap = new MapRepresentation();
 		}
 		// Example to retrieve the current position
 		String myPosition = ((AbstractDedaleAgent) this.myAgent).getCurrentPosition();
+		String nextNode = null;
 
 		if (myPosition != "") {
 			List<Couple<String, List<Couple<Observation, Integer>>>> lobs = ((AbstractDedaleAgent) this.myAgent)
@@ -82,6 +85,8 @@ public class WalkBehaviour extends SimpleBehaviour {
 			// list of observations associated to the currentPosition
 			List<Couple<Observation, Integer>> lObservations = lobs.get(0).getRight();
 
+
+			// on ferme le noeud actuel
 			if (!this.closedNodesContains(myPosition)) {
 				this.closedNodes.add(new Couple<>(myPosition, lObservations));
 				this.openNodes.remove(myPosition);
@@ -89,9 +94,15 @@ public class WalkBehaviour extends SimpleBehaviour {
 				this.myMap.addNode(myPosition, MapAttribute.closed);
 			}
 
+			// maj du path si nécessaire
+			if(this.path.size()> 0 && this.path.get(0).equals(myPosition))
+				this.path.remove(myPosition);
+			if(this.path.size()> 0)
+				nextNode = this.path.get(0);
+
 			// 2) get the surrounding nodes and, if not in closedNodes, add them to open
 			// nodes.
-			String nextNode = null;
+
 			Iterator<Couple<String, List<Couple<Observation, Integer>>>> iter = lobs.iterator();
 			while (iter.hasNext()) {
 				Couple<String, List<Couple<Observation, Integer>>> nodeId = iter.next();
@@ -117,26 +128,30 @@ public class WalkBehaviour extends SimpleBehaviour {
 			}
 
 			// example related to the use of the backpack for the treasure hunt
+			int tresor = -1;
 			Boolean b = false;
 			for (Couple<Observation, Integer> o : lObservations) {
-				switch (o.getLeft()) {
-				case DIAMOND:
-				case GOLD:
-					((AbstractDedaleAgent) this.myAgent).pick();
-					break;
-				default:
-					break;
+				if( ((AbstractDedaleAgent)this.myAgent).getBackPackFreeSpace()>0) {
+					switch (o.getLeft()) {
+					case DIAMOND:
+					case GOLD:
+						tresor = ((AbstractDedaleAgent) this.myAgent).pick();
+						break;
+					default:
+						break;
+					}
 				}
 			}
 
+
 			// Trying to store everything in the tanker
-//			System.out.println(this.myAgent.getLocalName() + " - My current backpack capacity is:"
-//					+ ((AbstractDedaleAgent) this.myAgent).getBackPackFreeSpace());
-//			System.out.println(this.myAgent.getLocalName()
-//					+ " - The agent tries to transfer is load into the Silo (if reachable); succes ? : "
-//					+ ((AbstractDedaleAgent) this.myAgent).emptyMyBackPack("Silo"));
-//			System.out.println(this.myAgent.getLocalName() + " - My current backpack capacity is:"
-//					+ ((AbstractDedaleAgent) this.myAgent).getBackPackFreeSpace());
+			//			System.out.println(this.myAgent.getLocalName() + " - My current backpack capacity is:"
+			//					+ ((AbstractDedaleAgent) this.myAgent).getBackPackFreeSpace());
+			//			System.out.println(this.myAgent.getLocalName()
+			//					+ " - The agent tries to transfer is load into the Silo (if reachable); succes ? : "
+			//					+ ((AbstractDedaleAgent) this.myAgent).emptyMyBackPack("Silo"));
+			//			System.out.println(this.myAgent.getLocalName() + " - My current backpack capacity is:"
+			//					+ ((AbstractDedaleAgent) this.myAgent).getBackPackFreeSpace());
 
 			if (this.openNodes.isEmpty()) {
 				this.trans = 8;
@@ -147,13 +162,31 @@ public class WalkBehaviour extends SimpleBehaviour {
 				if (nextNode == null) {
 					// no directly accessible openNode
 					// chose one, compute the path and take the first step.
-					this.path = myMap.getShortestPath(((AbstractDedaleAgent) this.myAgent).getCurrentPosition(),
-							this.openNodes.get(0));
-					nextNode = this.path.get(0);
+					if(openNodes.size()>0) {
+						this.path = myMap.getShortestPath(((AbstractDedaleAgent) this.myAgent).getCurrentPosition(),
+								this.openNodes.get(0));
+						nextNode = this.path.get(0);
+					}
+					else {
+
+						Random r= new Random();
+						int moveId=1+r.nextInt(lobs.size()-1);
+						nextNode = lobs.get(moveId).getLeft();
+						this.path.add(nextNode);
+
+					}
 				}
-				if (!((AbstractDedaleAgent) this.myAgent).moveTo(nextNode)) {
-					this.trans = 2;
+				
+				// on ne se déplace que si le trésor (s'il existe) a pu être récupéré
+				if(tresor != 0) {
+					if (!((AbstractDedaleAgent) this.myAgent).moveTo(nextNode)) {
+						this.trans = 2;
+						this.finished = true;
+					}
+				} else {
+					this.trans = 9;
 					this.finished = true;
+					
 				}
 
 			}

@@ -5,6 +5,7 @@ import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import dataStructures.tuple.Couple;
@@ -59,30 +60,14 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 
 	@Override
 	public void action() {
-		//System.out.println(this.myAgent.getLocalName()+" avance !");
+		//création de la map
 		if(this.myMap==null)
 			this.myMap= new MapRepresentation();
 
 		//0) Retrieve the current position
 		String myPosition=((AbstractDedaleAgent)this.myAgent).getCurrentPosition();
-		
-		/*Iterator<Couple<String,List<Couple<Observation,Integer>>>> iter = this.otherClosedNodes.iterator();
-		while(iter.hasNext()) {
-			Couple<String,List<Couple<Observation,Integer>>> node = iter.next();
-			if(!this.closedNodesContains(node.getLeft())) {
-				System.out.println("j'ajoute le noeud "+node.getLeft());
-				this.closedNodes.add(node);
-				if(this.openNodes.contains(node.getLeft())) {
-					this.openNodes.remove(node.getLeft());	
-				}
-				this.myMap.addNode(node.getLeft(),MapAttribute.closed);
-			}
-			this.otherClosedNodes.remove(node);
-		}*/
-		
-		/*this.closedNodes = this.cleanClosedNodes(closedNodes, otherClosedNodes);
-		this.otherClosedNodes = new ArrayList<>();*/
-		
+
+		// ajoute les noeuds fermés récupérés à partir d'une communication
 		if(this.otherClosedNodes.size() > 0) {
 			for(Couple<String,List<Couple<Observation,Integer>>> node : this.otherClosedNodes) {
 				if(!this.closedNodesContains(node.getLeft())) {
@@ -96,19 +81,8 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 			}
 		}
 
-		/*Iterator<Couple<String,String>> it = this.otherEdges.iterator();
-		while(it.hasNext()) {
-			Couple<String,String> edge = it.next();
-			if(!this.Edges.contains(edge)) {
-				this.Edges.add(edge);
-			}
-			this.otherEdges.remove(edge);
-		}*/
-		
-		/*Couple<List<Couple<String,String>>,List<Couple<String,String>>> tmpEdges = cleanEdges(this.Edges,this.otherEdges);
-		this.Edges = tmpEdges.getLeft();
-		this.otherEdges = tmpEdges.getRight();*/
-		
+
+		// ajoute les arêtes des noeuds récupérés à partir d'une communication
 		if(this.otherEdges.size() > 0) {
 			for(Couple<String,String> edge : this.otherEdges) {
 				if(!this.Edges.contains(edge)) {
@@ -122,7 +96,7 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 		if (myPosition!=null){
 			//List of observable from the agent's current position
 			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();//myPosition
-
+			String nextNode=null;
 
 			/**
 			 * Just added here to let you see what the agent is doing, otherwise he will be too quick
@@ -133,6 +107,13 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 				e.printStackTrace();
 			}
 
+			// maj du path si nécessaire
+			if(this.path.size()> 0 && this.path.get(0).equals(myPosition))
+				this.path.remove(myPosition);
+			if(this.path.size()> 0)
+				nextNode = this.path.get(0);
+
+
 			//1) remove the current node from openlist and add it to closedNodes.
 			if(!this.closedNodesContains(myPosition))
 				this.closedNodes.add(new Couple<>(myPosition,lobs.get(0).getRight()));
@@ -141,7 +122,7 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 			this.myMap.addNode(myPosition,MapAttribute.closed);
 
 			//2) get the surrounding nodes and, if not in closedNodes, add them to open nodes.
-			String nextNode=null;
+
 			Iterator<Couple<String,List<Couple<Observation,Integer>>>> iter=lobs.iterator();
 			while(iter.hasNext()){
 				Couple<String, List<Couple<Observation, Integer>>> nodeId=iter.next();
@@ -174,20 +155,23 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 				System.out.print(node + " ");
 			}
 			System.out.println();
-			
+
 			System.out.println("Path");
 			for (String p : this.path)
 				System.out.println(p+" ");
 			System.out.println();
-			
 
 
-			//3) while openNodes is not empty, continues.
+
+			//3) si plus de noeuds ouverts, l'agent se déplace aléatoirement
 			if (this.openNodes.isEmpty()){
-				//Explo finished
-				this.trans = 8;
-				finished=true;
-				System.out.println("Exploration successufully done, behaviour removed.");
+				System.out.println("Exploration de "+this.myAgent.getLocalName()+" terminée");
+				if(nextNode == null) {
+					Random r= new Random();
+					int moveId=1+r.nextInt(lobs.size()-1);
+					nextNode = lobs.get(moveId).getLeft();
+					this.path.add(nextNode);
+				}
 			}else{
 				//4) select next move.
 				//4.1 If there exist one open node directly reachable, go for it,
@@ -220,7 +204,7 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 	public int onEnd() {
 		return this.trans;
 	}
-	
+
 	public boolean closedNodesContains(String nodeId) {
 		Iterator<Couple<String,List<Couple<Observation,Integer>>>> iter=this.closedNodes.iterator();
 		while(iter.hasNext()){
@@ -230,9 +214,9 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 			}
 		}
 		return false;
-		
+
 	}
-	
+
 	public static Couple<List<Couple<String,String>>,List<Couple<String,String>>> cleanEdges(List<Couple<String,String>> Edges, List<Couple<String,String>> otherEdges) {
 		Iterator<Couple<String,String>> it = otherEdges.iterator();
 		while(it.hasNext()) {
@@ -244,7 +228,7 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 		}
 		return new Couple<>(Edges,otherEdges);
 	}
-	
+
 	public List<Couple<String,List<Couple<Observation,Integer>>>> cleanClosedNodes(List<Couple<String,List<Couple<Observation,Integer>>>> closedNodes, List<Couple<String,List<Couple<Observation,Integer>>>> otherClosedNodes) {
 		Iterator<Couple<String,List<Couple<Observation,Integer>>>> iter = this.closedNodes.iterator();
 		while(iter.hasNext()) {
@@ -259,5 +243,5 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 		}
 		return closedNodes;
 	}
-	
+
 }

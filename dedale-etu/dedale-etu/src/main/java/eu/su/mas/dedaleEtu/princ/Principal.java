@@ -479,6 +479,18 @@ public class Principal {
 		//ag=createNewDedaleAgent(c, agentName, DummyMovingAgent.class.getName(), entityParameters1);
 		ag=createNewDedaleAgent(c, agentName, ExploreSoloAgent.class.getName(), entityParameters2);
 		agentList.add(ag);
+		
+		/*********
+		 * AGENT Explo3
+		 *********/
+		
+		c = containerList.get(ConfigurationFile.LOCAL_CONTAINER2_NAME);
+		Assert.assertNotNull("This container does not exist",c);
+		agentName="Explo3";
+		Object [] entityParameters3= {"My parameters"};
+		ag = createNewDedaleAgent(c,agentName,ExploreSoloAgent.class.getName(),entityParameters3);
+		agentList.add(ag);
+		
 
 		/*********************
 		 * All agents created

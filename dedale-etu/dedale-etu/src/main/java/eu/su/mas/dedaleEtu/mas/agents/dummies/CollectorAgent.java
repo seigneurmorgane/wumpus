@@ -85,6 +85,7 @@ public class CollectorAgent extends AbstractDedaleAgent {
 		fsm.registerState(new SortBehaviour(this, this.myMap, this.openNodes, this.closedNodes, this.otherClosedNodes,
 				this.edges, this.otherEdges), "Filtre");
 		fsm.registerState(new RandomWalkEndBehaviour(this), "RWalk");
+		fsm.registerState(new HelpRequiredBehaviour(this),"HReq");
 
 		/************************************************
 		 * 
@@ -104,6 +105,9 @@ public class CollectorAgent extends AbstractDedaleAgent {
 		fsm.registerTransition("RInfos", "Filtre", 7);
 		fsm.registerTransition("WalkBack", "Filtre", 7);
 		fsm.registerTransition("Filtre", "Walk", 1);
+		fsm.registerTransition("HReq","HReq",9);
+		fsm.registerTransition("HReq","Walk",1);
+		fsm.registerTransition("Walk","HReq",9);
 
 		/************************************************
 		 * 

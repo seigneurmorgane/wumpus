@@ -24,11 +24,11 @@ public class ReceiveInfosBehaviour extends SimpleBehaviour {
 	private List<String> path;
 	private boolean finished = false;
 	private int trans = 5;
-	private String nom_corres;
+	private List<String> nom_corres;
 
 	public ReceiveInfosBehaviour(final AbstractDedaleAgent myagent,
 			List<Couple<String, List<Couple<Observation, Integer>>>> otherClosedNodes,
-			List<Couple<String, String>> otherEdges, List<String> openNodes, List<String> path, String nom_corres) {
+			List<Couple<String, String>> otherEdges, List<String> openNodes, List<String> path, List<String> nom_corres) {
 		super(myagent);
 		this.otherClosedNodes = otherClosedNodes;
 		this.otherEdges = otherEdges;
@@ -40,7 +40,7 @@ public class ReceiveInfosBehaviour extends SimpleBehaviour {
 	@Override
 	public void action() {
 		this.myAgent.doWait(1000);
-		System.out.println(this.myAgent.getLocalName()+" attend les infos");
+		System.out.println(this.myAgent.getLocalName()+" attend les infos de "+this.nom_corres.get(0));
 		// 1) receive the message
 		final MessageTemplate msgTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
 
@@ -62,7 +62,7 @@ public class ReceiveInfosBehaviour extends SimpleBehaviour {
 					this.trans = 1;
 
 					System.out.println("taille des infos sur les capacités -> " + comp.size());
-					System.out.println("le chemin de l'autre explo = " + comp.get(1));
+					System.out.println("le chemin de l'explo '"+this.nom_corres+"' = " + comp.get(1));
 					List<Couple<String, List<Couple<Observation, Integer>>>> lobs = ((AbstractDedaleAgent) this.myAgent)
 							.observe();
 					String myPosition=((AbstractDedaleAgent)this.myAgent).getCurrentPosition();
@@ -108,7 +108,7 @@ public class ReceiveInfosBehaviour extends SimpleBehaviour {
 					String nextNode = null;
 					//deuxième essai : pour donner la priorité à un des deux agents bloqués
 					if(comp.get(0)> 0 || (comp.get(0)==0 && comp.get(1)> this.path.size()) || 
-							(comp.get(0) == 0 && comp.get(1) == this.path.size() && this.nom_corres.compareTo(this.myAgent.getLocalName())<0)) {
+							(comp.get(0) == 0 && comp.get(1) == this.path.size() && this.nom_corres.get(0).compareTo(this.myAgent.getLocalName())<0)) {
 						//dans ce cas là, l'agent courant n'a donc pas la priorité et doit changer de chemin
 						this.myAgent.doWait(500);
 						

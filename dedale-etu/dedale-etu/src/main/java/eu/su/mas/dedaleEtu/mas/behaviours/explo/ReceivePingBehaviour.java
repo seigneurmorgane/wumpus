@@ -21,7 +21,7 @@ public class ReceivePingBehaviour extends SimpleBehaviour{
 	private List<String> path;
 	private int nb = 0;
 	private List<String> nom_corres;
-	
+
 	public ReceivePingBehaviour(final AbstractDedaleAgent myagent,MapRepresentation myMap, List<String> openNodes,List<String> path, List<String> nom_corres) {
 		super(myagent);
 		this.myMap = myMap;
@@ -29,15 +29,16 @@ public class ReceivePingBehaviour extends SimpleBehaviour{
 		this.path = path;
 		this.nom_corres = nom_corres;
 	}
-	
+
 	@Override
 	public void action() {
 		this.myAgent.doWait(500);
+		System.out.println("RECEIVE PING DE "+this.myAgent.getLocalName());
 		System.out.println("essai numero "+(nb++));
-		System.out.println(this.myAgent.getLocalName()+" is waiting for another ping ...\n current open nodes : "+this.openNodes);
-		System.out.println("il y a t il un path précis ?");
-		if(this.path.size()> 0)
-			System.out.println(this.path);
+		//System.out.println(this.myAgent.getLocalName()+" is waiting for another ping ...\n current open nodes : "+this.openNodes);
+		//System.out.println("il y a t il un path précis ?");
+		//if(this.path.size()> 0)
+		//	System.out.println(this.path);
 		//1) receive the message
 		final MessageTemplate msgTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM);			
 
@@ -103,43 +104,68 @@ public class ReceivePingBehaviour extends SimpleBehaviour{
 						this.trans = 3;
 					}
 				}*/
-				
-			// deuxième solution : ceci est appelé lorsque l'agent ne reçoit tjrs pas de ping
-			// il doit donc avancer
+
+				// deuxième solution : ceci est appelé lorsque l'agent ne reçoit tjrs pas de ping
+				// il doit donc avancer
 				String nextNode = null;
-				if(path.size()> 0) {
-					System.out.println("le chemin est bien enregistré : "+this.path);
-					//nextNode = path.get(0);
-				} else if (this.openNodes.size()>0){
-					this.path = myMap.getShortestPath(((AbstractDedaleAgent)this.myAgent).getCurrentPosition(), this.openNodes.get(0));
-				} else {
+				try {
+
+					if(path.size()> 0 && path.get(0).equals(((AbstractDedaleAgent)this.myAgent).getCurrentPosition())) {
+						
+						System.out.println("cas 1");
+						path.remove(path.get(0));
+					}
+					if(path.size()> 0) {
+						System.out.println("cas 1 bis");
+						System.out.println("le chemin est bien enregistré : "+this.path);
+						//nextNode = path.get(0);
+					} else if (this.openNodes.size()>0){
+						System.out.println("cas 2");
+
+						this.path = myMap.getShortestPath(((AbstractDedaleAgent)this.myAgent).getCurrentPosition(), this.openNodes.get(0));
+
+					} else {
+						System.out.println("cas 3");
+						this.path.add(((AbstractDedaleAgent)this.myAgent).observe().get(1).getLeft());
+					}
+				}  catch(Exception e) {
+					System.out.println("cas 2 FAIL MODE");
+
 					this.path.add(((AbstractDedaleAgent)this.myAgent).observe().get(1).getLeft());
 				}
-				
+
 				nextNode = path.get(0);
 				this.nb = 0;
 				this.trans = 1;
 				this.finished=true;
-				System.out.println(this.myAgent.getLocalName()+"("+((AbstractDedaleAgent)this.myAgent).getCurrentPosition()+") va essayer d'aller en "+nextNode);
-				if(!((AbstractDedaleAgent)this.myAgent).moveTo(nextNode)) {
-					System.out.println("je n'arrive pas à bouger !!! dsl "+this.nom_corres);
-					this.trans = 3;
-				}
+
+				System.out.println(this.myAgent.getLocalName()+" : from "+((AbstractDedaleAgent)this.myAgent).getCurrentPosition()+" to "+this.path);
+				//System.out.println(this.myAgent.getLocalName()+"("+((AbstractDedaleAgent)this.myAgent).getCurrentPosition()+") va essayer d'aller en "+nextNode);
 				
-			
+				try {
+					if(!((AbstractDedaleAgent)this.myAgent).moveTo(nextNode)) {
+						System.out.println("je n'arrive pas à bouger !!! dsl "+this.nom_corres);
+						this.trans = 3;
+					}	
+				} catch(RuntimeException e) {
+					this.trans = 3;
+					this.path.clear();
+				}
+
+
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	@Override
 	public boolean done() {
 		return this.finished;
 	}
-	
+
 	@Override
 	public int onEnd() {
 		return this.trans;

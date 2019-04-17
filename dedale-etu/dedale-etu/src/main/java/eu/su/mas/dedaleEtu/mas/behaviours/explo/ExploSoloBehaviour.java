@@ -60,6 +60,7 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 
 	@Override
 	public void action() {
+		System.out.println("EXPLOSOLO de "+this.myAgent.getLocalName());
 		//création de la map
 		if(this.myMap==null)
 			this.myMap= new MapRepresentation();
@@ -110,8 +111,10 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 			// maj du path si nécessaire
 			if(this.path.size()> 0 && this.path.get(0).equals(myPosition))
 				this.path.remove(myPosition);
-			if(this.path.size()> 0)
+			if(this.path.size()> 0) {
+				System.out.println("choix path cas 1 (déjà def) : "+this.myAgent.getLocalName());
 				nextNode = this.path.get(0);
+			}
 
 
 			//1) remove the current node from openlist and add it to closedNodes.
@@ -140,6 +143,7 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 						nextNode=nodeId.getLeft();
 						this.path.clear();
 						this.path.add(nodeId.getLeft());
+						System.out.println("choix path cas 2 (parmi obs) : "+this.myAgent.getLocalName());
 					}
 				}
 			}
@@ -170,6 +174,7 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 					Random r= new Random();
 					int moveId=1+r.nextInt(lobs.size()-1);
 					nextNode = lobs.get(moveId).getLeft();
+					this.path.clear();
 					this.path.add(nextNode);
 				}
 			}else{
@@ -182,66 +187,77 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 					this.path = myMap.getShortestPath(((AbstractDedaleAgent)this.myAgent).getCurrentPosition(), this.openNodes.get(0));
 					System.out.println(this.myAgent.getLocalName()+" doesn't know where to go ...");
 					nextNode=this.path.get(0);
-					System.out.println("--> -->"+ nextNode);
+					System.out.println("choix path cas 3 (avec getshortestpath) : "+this.myAgent.getLocalName());
+					//System.out.println("--> -->"+ nextNode);
 				}
+			}
+
+			System.out.println(this.myAgent.getLocalName()+" : from "+myPosition+" to "+this.path);
+
+			try {
 				if( ! ((AbstractDedaleAgent)this.myAgent).moveTo(nextNode)) {
 					finished=true;
 					this.trans=2;
 					System.out.println("Exploration STOP");
 				}
-			}
-
-
-		}
-	}
-
-	@Override
-	public boolean done() {
-		return finished;
-	}
-
-	@Override
-	public int onEnd() {
-		return this.trans;
-	}
-
-	public boolean closedNodesContains(String nodeId) {
-		Iterator<Couple<String,List<Couple<Observation,Integer>>>> iter=this.closedNodes.iterator();
-		while(iter.hasNext()){
-			Couple<String, List<Couple<Observation, Integer>>> node=iter.next();
-			if(nodeId.equals(node.getLeft())) {
-				return true;
+			} catch(RuntimeException e) {
+				System.out.println("FAIL MODE : " +this.myAgent.getLocalName());
+				finished = false;
+				this.path.clear();
 			}
 		}
-		return false;
+
 
 	}
 
-	public static Couple<List<Couple<String,String>>,List<Couple<String,String>>> cleanEdges(List<Couple<String,String>> Edges, List<Couple<String,String>> otherEdges) {
-		Iterator<Couple<String,String>> it = otherEdges.iterator();
-		while(it.hasNext()) {
-			Couple<String,String> edge = it.next();
-			if(!Edges.contains(edge)) {
-				Edges.add(edge);
-			}
-			otherEdges.remove(edge);
+
+@Override
+public boolean done() {
+	return finished;
+}
+
+@Override
+public int onEnd() {
+	return this.trans;
+}
+
+public boolean closedNodesContains(String nodeId) {
+	Iterator<Couple<String,List<Couple<Observation,Integer>>>> iter=this.closedNodes.iterator();
+	while(iter.hasNext()){
+		Couple<String, List<Couple<Observation, Integer>>> node=iter.next();
+		if(nodeId.equals(node.getLeft())) {
+			return true;
 		}
-		return new Couple<>(Edges,otherEdges);
 	}
+	return false;
 
-	public List<Couple<String,List<Couple<Observation,Integer>>>> cleanClosedNodes(List<Couple<String,List<Couple<Observation,Integer>>>> closedNodes, List<Couple<String,List<Couple<Observation,Integer>>>> otherClosedNodes) {
-		Iterator<Couple<String,List<Couple<Observation,Integer>>>> iter = this.closedNodes.iterator();
-		while(iter.hasNext()) {
-			Couple<String,List<Couple<Observation,Integer>>> node = iter.next();
-			if(!closedNodesContains(node.getLeft())) {
-				closedNodes.add(node);
-				if(this.openNodes.contains(node.getLeft())) {
-					this.openNodes.remove(node.getLeft());	
-				}
-				this.myMap.addNode(node.getLeft(),MapAttribute.closed);
-			}
+}
+
+public static Couple<List<Couple<String,String>>,List<Couple<String,String>>> cleanEdges(List<Couple<String,String>> Edges, List<Couple<String,String>> otherEdges) {
+	Iterator<Couple<String,String>> it = otherEdges.iterator();
+	while(it.hasNext()) {
+		Couple<String,String> edge = it.next();
+		if(!Edges.contains(edge)) {
+			Edges.add(edge);
 		}
-		return closedNodes;
+		otherEdges.remove(edge);
 	}
+	return new Couple<>(Edges,otherEdges);
+}
+
+public List<Couple<String,List<Couple<Observation,Integer>>>> cleanClosedNodes(List<Couple<String,List<Couple<Observation,Integer>>>> closedNodes, List<Couple<String,List<Couple<Observation,Integer>>>> otherClosedNodes) {
+	Iterator<Couple<String,List<Couple<Observation,Integer>>>> iter = this.closedNodes.iterator();
+	while(iter.hasNext()) {
+		Couple<String,List<Couple<Observation,Integer>>> node = iter.next();
+		if(!closedNodesContains(node.getLeft())) {
+			closedNodes.add(node);
+			if(this.openNodes.contains(node.getLeft())) {
+				this.openNodes.remove(node.getLeft());	
+			}
+			this.myMap.addNode(node.getLeft(),MapAttribute.closed);
+		}
+	}
+	return closedNodes;
+}
 
 }

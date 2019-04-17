@@ -20,6 +20,7 @@ public class SendPingBehaviour extends OneShotBehaviour {
 
 	@Override
 	public void action() {
+		System.out.println("SEND PING DE "+this.myAgent.getLocalName());
 		DFAgentDescription dfd = new DFAgentDescription();
 
 		ServiceDescription sd = new ServiceDescription();
@@ -53,6 +54,8 @@ public class SendPingBehaviour extends OneShotBehaviour {
 		}
 
 		this.trans = 3;
+		System.out.println("no path recorded here");
+		//System.out.println(this.myAgent.getLocalName()+" : WAIT -> from "+((AbstractDedaleAgent)this.myAgent).getCurrentPosition()+" to "+this.path);
 	}
 
 	@Override

@@ -43,6 +43,7 @@ public class SendInfosBehaviour extends OneShotBehaviour{
 
 	@Override
 	public void action() {
+		System.out.println("SEND INFOS DE "+this.myAgent.getLocalName());
 		this.comp = new ArrayList<Integer>();
 		this.comp.add(0);
 		if(path.size() > 0)
@@ -51,8 +52,8 @@ public class SendInfosBehaviour extends OneShotBehaviour{
 			Random rand = new Random();
 			this.comp.add(Math.abs(rand.nextInt()*100+rand.nextInt()*10+rand.nextInt()));
 		}
-		System.out.println(this.myAgent.getLocalName()+" my open nodes : "+this.openNodes);
-		System.out.println("mes noeuds fermés à envoyer :"+closedNodes);
+		//System.out.println(this.myAgent.getLocalName()+" my open nodes : "+this.openNodes);
+		//System.out.println("mes noeuds fermés à envoyer :"+closedNodes);
 		/*DFAgentDescription dfd = new DFAgentDescription();
 		ServiceDescription sd = new ServiceDescription();
 		sd.setType("Explo");
@@ -104,6 +105,7 @@ public class SendInfosBehaviour extends OneShotBehaviour{
 				e.printStackTrace();
 			}
 
+			System.out.println(this.myAgent.getLocalName()+" : WAIT -> from "+((AbstractDedaleAgent)this.myAgent).getCurrentPosition()+" to "+this.path);
 			((AbstractDedaleAgent) this.myAgent).sendMessage(msg);
 		}
 

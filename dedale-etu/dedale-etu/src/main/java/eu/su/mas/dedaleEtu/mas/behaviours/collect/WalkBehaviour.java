@@ -178,16 +178,16 @@ public class WalkBehaviour extends SimpleBehaviour {
 				}
 				
 				// on ne se déplace que si le trésor (s'il existe) a pu être récupéré
-				if(tresor != 0) {
+				//if(tresor != 0) {
 					if (!((AbstractDedaleAgent) this.myAgent).moveTo(nextNode)) {
 						this.trans = 2;
 						this.finished = true;
 					}
-				} else {
+				/*} else {
 					this.trans = 9;
 					this.finished = true;
 					
-				}
+				}*/
 
 			}
 		}

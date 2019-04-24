@@ -2,3 +2,5 @@ mapname:noNameMonoAgentExplo
 agentExplo:Explo1:3:free:-1:-1:0:1:1
 agentExplo:Explo2:3:free:-1:-1:0:2:1
 agentExplo:Explo3:3:free:-1:-1:0:2:1
+agentCollect:Collect1:3:free:50:0:0:5:0
+agentCollect:Collect2:3:free:50:0:0:5:0

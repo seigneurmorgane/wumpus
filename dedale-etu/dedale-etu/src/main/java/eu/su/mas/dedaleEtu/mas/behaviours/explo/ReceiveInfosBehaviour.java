@@ -2,6 +2,7 @@ package eu.su.mas.dedaleEtu.mas.behaviours.explo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
@@ -123,11 +124,12 @@ public class ReceiveInfosBehaviour extends SimpleBehaviour {
 						if (path.size() > 0) {
 							System.out.println("AVANT : "+path.get(0));
 							// on suppose que l'agent essayait de se rendre en path.get(0)
-							int i = 1;
+							Random r= new Random();
 							nextNode = lobs.get(0).getLeft();
-							while(i < lobs.size() && (nextNode.equals(myPosition) || nextNode.equals(path.get(0)))) {
-								nextNode = lobs.get(i).getLeft();
-								i++;
+							while((nextNode.equals(myPosition) || nextNode.equals(path.get(0)))) {
+								nextNode = lobs.get(1+r.nextInt(lobs.size()-1)).getLeft();
+								this.path.clear();
+								this.path.add(nextNode);
 							}
 							this.path.clear();
 							this.path.add(nextNode);
@@ -135,10 +137,13 @@ public class ReceiveInfosBehaviour extends SimpleBehaviour {
 							System.out.println("AVANT (vide)");
 							System.out.println("bizarrement, "+this.myAgent.getLocalName()+" n'a pas de chemin prédéfini ...");
 							nextNode = lobs.get(0).getLeft();
-							int i = 0;
-							while(i < lobs.size() && (nextNode.equals(myPosition) )) {
-								nextNode = lobs.get(i).getLeft();
-								i++;
+
+							Random r= new Random();
+							
+							while((nextNode.equals(myPosition) )) {
+								nextNode = lobs.get(1+r.nextInt(lobs.size()-1)).getLeft();
+								this.path.clear();
+								this.path.add(nextNode);
 							}
 							this.path.clear();
 							this.path.add(nextNode);

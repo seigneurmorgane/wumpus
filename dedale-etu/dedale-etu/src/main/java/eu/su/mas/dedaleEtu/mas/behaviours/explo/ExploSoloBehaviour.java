@@ -88,6 +88,8 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 			for(Couple<String,String> edge : this.otherEdges) {
 				if(!this.Edges.contains(edge)) {
 					this.Edges.add(edge);
+					this.myMap.addEdge(edge.getRight(), edge.getLeft());
+					this.myMap.addEdge(edge.getLeft(), edge.getRight());
 				}
 				this.otherEdges.remove(edge);
 			}

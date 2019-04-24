@@ -1,1 +1,1 @@
-http://25.40.82.54:7778/acc
+http://mbp-de-morgane:7778/acc

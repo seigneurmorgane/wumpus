@@ -330,5 +330,9 @@ public class WalkBehaviour extends SimpleBehaviour {
 		else
 			return res;
 	}
+	
+	
+	
+	
 
 }

@@ -129,7 +129,7 @@ public class WalkBehaviour extends SimpleBehaviour{
 						this.path.add(nodeId.getLeft());
 					}
 				}
-				
+
 				if(!nodeId.getLeft().equals(myPosition)) {
 					if(!this.Edges.contains(new Couple<>(myPosition,nodeId.getLeft())) && !this.Edges.contains(new Couple<>(nodeId.getLeft(),myPosition))) {
 						this.Edges.add(new Couple<>(myPosition, nodeId.getLeft()));
@@ -137,8 +137,8 @@ public class WalkBehaviour extends SimpleBehaviour{
 					this.myMap.addEdge(myPosition, nodeId.getLeft());
 				}
 				this.remplacerNoeud(nodeId.getLeft(), nodeId.getRight());
-				
-				
+
+
 			}
 
 			// si toujours pas de chemin à prendre 
@@ -184,25 +184,33 @@ public class WalkBehaviour extends SimpleBehaviour{
 				try {
 					if(!((AbstractDedaleAgent)this.myAgent).moveTo(nextNode)) {
 						if(this.openNodes.size() <= 1) {
-							this.myAgent.doWait(1000);
-							
-							List<String> ci = cheminsInterdits();
-							ci.add(nextNode);
-							
-							iter=lobs.iterator();
-							while(iter.hasNext()) {
-								Couple<String, List<Couple<Observation, Integer>>> nodeId=iter.next();
-								
-								if(!ci.contains(nodeId.getLeft())) {
-									System.out.println(nodeId.getLeft());
-									((AbstractDedaleAgent) this.myAgent).moveTo(nodeId.getLeft());
-									break;
-								}
+							this.myAgent.doWait(500);
+							List<String> chem = cheminNonBloque(lobs,nextNode);
+							if(chem.size()>1) {
+								Random r= new Random();
+								int moveId=1+r.nextInt(chem.size()-1);
+								nextNode = chem.get(moveId);
+								this.path.clear();
+								this.path.add(nextNode);
+								System.out.println(((AbstractDedaleAgent)this.myAgent).getLocalName()+" goes to "+nextNode);
+								((AbstractDedaleAgent)this.myAgent).moveTo(nextNode);
+							} else if (chem.size()==1) {
+								this.path.clear();
+								nextNode = chem.get(0);
+								this.path.add(nextNode);
+								System.out.println(((AbstractDedaleAgent)this.myAgent).getLocalName()+" goes to "+nextNode);
+								((AbstractDedaleAgent)this.myAgent).moveTo(nextNode);
+							} else {
+								System.out.println(((AbstractDedaleAgent)this.myAgent).getLocalName()+" waits");
+								this.myAgent.doWait(500);
 							}
+							
 						}else{
+							this.myAgent.doWait(100);
 							this.openNodes.add(this.openNodes.remove(0));
 						}
-					}
+					} else
+						this.path.remove(nextNode);
 
 
 				} catch(Exception e) {
@@ -276,7 +284,7 @@ public class WalkBehaviour extends SimpleBehaviour{
 			}
 		}
 		if (way.size()>0) {
-			
+
 			if(p!= null && way.contains(p)) {
 				res.add(p);
 			} else {
@@ -287,7 +295,7 @@ public class WalkBehaviour extends SimpleBehaviour{
 		else
 			return res;
 	}
-	
+
 	public void remplacerNoeud(String node, List<Couple<Observation,Integer>> obs) {
 		boolean b = true;
 		Iterator<Couple<String,List<Couple<Observation,Integer>>>> iter = this.closedNodes.iterator();
@@ -298,9 +306,45 @@ public class WalkBehaviour extends SimpleBehaviour{
 				comp = new Couple<String,List<Couple<Observation,Integer>>>(node,obs);
 				b = false;
 			}
-			
+
 		}
-		
+
 
 	}
+
+
+
+	public List<String> cheminsInterdits2() {
+		List<String> chemins= new ArrayList<String>();
+		for (Couple<Integer,Couple<String,List<String>>> elem : this.otherPaths) {
+			chemins.add(elem.getRight().getRight().get(0));
+		}
+		return chemins;
+	}
+
+
+	public List<String> cheminNonBloque(List<Couple<String,List<Couple<Observation,Integer>>>> lobs, String p) {
+		List<String> noeudsBloque = this.cheminsInterdits2();
+		noeudsBloque.add(p);
+		System.out.println(((AbstractDedaleAgent)this.myAgent).getLocalName()+ "can't go to "+noeudsBloque);
+		List<String> way = obsString(lobs);
+		List<String> res = new ArrayList<String>();
+		for (String c : noeudsBloque) {
+			if (way.contains(c)) {
+				way.remove(c);
+			}
+		}
+		if (way.size()>0) {
+
+			if(p!= null && way.contains(p)) {
+				res.add(p);
+			} else {
+				res.addAll(way);
+			}
+			return res;
+		}
+		else
+			return res;
+	}
+
 }

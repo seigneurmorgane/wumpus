@@ -79,7 +79,7 @@ public class WalkBehaviour extends SimpleBehaviour {
 			//System.out.println("Essaye de vider son sac : " + ((AbstractDedaleAgent)this.myAgent).getBackPackFreeSpace());
 			boolean emptyBackPack = ((AbstractDedaleAgent)this.myAgent).emptyMyBackPack(this.locationTanker.get(0));
 			if(emptyBackPack) {
-				System.out.println("Sac bien vidé : " + ((AbstractDedaleAgent)this.myAgent).getBackPackFreeSpace());
+				//System.out.println("Sac bien vidé : " + ((AbstractDedaleAgent)this.myAgent).getBackPackFreeSpace());
 			}	
 		}
 
@@ -136,7 +136,7 @@ public class WalkBehaviour extends SimpleBehaviour {
 
 
 		if (myPosition != null ) {
-			System.out.println(this.path.size());
+	
 			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();//myPosition
 			String nextNode=null;
 
@@ -158,7 +158,7 @@ public class WalkBehaviour extends SimpleBehaviour {
 
 			// chemin vers un trésor si l'agent ne sait pas où aller
 			if( this.path.size() == 0 && ((AbstractDedaleAgent)this.myAgent).getBackPackFreeSpace()>0) {
-				System.out.println("ou sont les trésors ?");
+				//System.out.println("ou sont les trésors ?");
 				this.path = cheminTresor(myPosition);
 			}
 
@@ -257,19 +257,19 @@ public class WalkBehaviour extends SimpleBehaviour {
 						if(type_tresor.contains(Observation.DIAMOND) && o.getRight()>0) {
 							if( ((AbstractDedaleAgent)this.myAgent).openLock(o.getLeft()) ) {
 								tresor = ((AbstractDedaleAgent) this.myAgent).pick();
-								System.out.println("collecté "+tresor);
+								//System.out.println("collecté "+tresor);
 							}
 							else
 								tresor = 0;
 						}
 						break;
 					case GOLD:
-						System.out.println("gold ici");
+						//System.out.println("gold ici");
 						if(type_tresor.contains(Observation.GOLD) && o.getRight()>0) {
 							System.out.println("trying");
 							if( ((AbstractDedaleAgent)this.myAgent).openLock(o.getLeft()) ) {
 								tresor = ((AbstractDedaleAgent) this.myAgent).pick();
-								System.out.println("collecté "+tresor);
+								//System.out.println("collecté "+tresor);
 							}
 							else
 								tresor = 0;
@@ -287,25 +287,33 @@ public class WalkBehaviour extends SimpleBehaviour {
 				try {
 					if(!((AbstractDedaleAgent)this.myAgent).moveTo(nextNode)) {
 						if(this.openNodes.size() <= 1) {
-							this.myAgent.doWait(1000);
-							
-							List<String> ci = cheminsInterdits();
-							ci.add(nextNode);
-							
-							iter=lobs.iterator();
-							while(iter.hasNext()) {
-								Couple<String, List<Couple<Observation, Integer>>> nodeId=iter.next();
-								
-								if(!ci.contains(nodeId.getLeft())) {
-									System.out.println(nodeId.getLeft());
-									((AbstractDedaleAgent) this.myAgent).moveTo(nodeId.getLeft());
-									break;
-								}
+							this.myAgent.doWait(500);
+							List<String> chem = cheminNonBloque(lobs,nextNode);
+							if(chem.size()>1) {
+								Random r= new Random();
+								int moveId=1+r.nextInt(chem.size()-1);
+								nextNode = chem.get(moveId);
+								this.path.clear();
+								this.path.add(nextNode);
+								System.out.println(((AbstractDedaleAgent)this.myAgent).getLocalName()+" goes to "+nextNode);
+								((AbstractDedaleAgent)this.myAgent).moveTo(nextNode);
+							} else if (chem.size()==1) {
+								this.path.clear();
+								nextNode = chem.get(0);
+								this.path.add(nextNode);
+								System.out.println(((AbstractDedaleAgent)this.myAgent).getLocalName()+" goes to "+nextNode);
+								((AbstractDedaleAgent)this.myAgent).moveTo(nextNode);
+							} else {
+								System.out.println(((AbstractDedaleAgent)this.myAgent).getLocalName()+" waits ");
+								this.myAgent.doWait(500);
 							}
+							
 						}else{
+							this.myAgent.doWait(100);
 							this.openNodes.add(this.openNodes.remove(0));
 						}
-					}
+					} else
+						this.path.remove(nextNode);
 				} catch(Exception e) {
 					e.printStackTrace();
 				}
@@ -446,6 +454,39 @@ public class WalkBehaviour extends SimpleBehaviour {
 			}
 		}
 
+	}
+	
+	public List<String> cheminsInterdits2() {
+		List<String> chemins= new ArrayList<String>();
+		for (Couple<Integer,Couple<String,List<String>>> elem : this.otherPaths) {
+				chemins.add(elem.getRight().getRight().get(0));
+		}
+		return chemins;
+	}
+	
+	
+	public List<String> cheminNonBloque(List<Couple<String,List<Couple<Observation,Integer>>>> lobs, String p) {
+		List<String> noeudsBloque = this.cheminsInterdits2();
+		noeudsBloque.add(p);
+		System.out.println(((AbstractDedaleAgent)this.myAgent).getLocalName()+ "can't go to "+noeudsBloque);
+		List<String> way = obsString(lobs);
+		List<String> res = new ArrayList<String>();
+		for (String c : noeudsBloque) {
+			if (way.contains(c)) {
+				way.remove(c);
+			}
+		}
+		if (way.size()>0) {
+
+			if(p!= null && way.contains(p)) {
+				res.add(p);
+			} else {
+				res.addAll(way);
+			}
+			return res;
+		}
+		else
+			return res;
 	}
 
 

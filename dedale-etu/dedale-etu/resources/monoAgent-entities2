@@ -1,3 +1,3 @@
 mapname:noNameMonoAgentExplo
-agentCollect:Collect1:3:free:-1:-1:0:1:1
-agentCollect:Collect2:3:free:-1:-1:0:2:1
+agentExplo:Explo1:3:free:-1:-1:0:1:1
+wumpus:Golem:0:free:200:0:1:0:0

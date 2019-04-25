@@ -49,6 +49,8 @@ public class SendNodeBehaviour extends OneShotBehaviour {
 						
 						ArrayList<String> info = new ArrayList<String>();
 						
+						info.add(((AbstractDedaleAgent) this.myAgent).getLocalName());
+						
 						for(Couple<String, List<Couple<Observation, Integer>>> e:lobs) {
 							info.add(e.getLeft());
 						}

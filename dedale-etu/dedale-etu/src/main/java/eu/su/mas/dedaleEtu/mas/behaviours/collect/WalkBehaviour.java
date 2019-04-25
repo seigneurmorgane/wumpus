@@ -62,7 +62,6 @@ public class WalkBehaviour extends SimpleBehaviour {
 		this.otherOpenNodes = otherOpenNodes;
 		this.type_tresor = type_tresor;
 		this.locationTanker = locationTanker;
-
 	}
 
 	@Override
@@ -73,7 +72,16 @@ public class WalkBehaviour extends SimpleBehaviour {
 
 		// position actuelle
 		String myPosition = ((AbstractDedaleAgent)this.myAgent).getCurrentPosition();
-
+		
+		//Vide son sac
+		if(!this.locationTanker.isEmpty()) {
+			System.out.println("Essaye de vider son sac : " + ((AbstractDedaleAgent)this.myAgent).getBackPackFreeSpace());
+			boolean emptyBackPack = ((AbstractDedaleAgent)this.myAgent).emptyMyBackPack(this.locationTanker.get(0));
+			if(emptyBackPack) {
+				System.out.println("Sac bien vider : " + ((AbstractDedaleAgent)this.myAgent).getBackPackFreeSpace());
+			}	
+		}
+		
 		// ajoute les noeuds fermés récupérés à partir d'une communication
 		Iterator<Couple<String,List<Couple<Observation,Integer>>>> iter = this.otherClosedNodes.iterator();
 		while(iter.hasNext()) {

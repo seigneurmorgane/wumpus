@@ -3,7 +3,7 @@ package eu.su.mas.dedaleEtu.mas.agents.dummies;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedale.mas.agent.behaviours.startMyBehaviours;
-import eu.su.mas.dedaleEtu.mas.behaviours.InitDFBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.explo.InitDFBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.collect.*;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 

@@ -161,7 +161,7 @@ public class WalkBehaviour extends SimpleBehaviour {
 				
 			
 			else if(this.path.size() == 0 && ((AbstractDedaleAgent)this.myAgent).getBackPackFreeSpace()==0) {
-				for (int i = 1 ; i < this.locationTanker.size() && this.path.size()==0; i++) {
+				for (int i = 2 ; i < this.locationTanker.size() && this.path.size()==0; i++) {
 					try {
 						this.path = myMap.getShortestPath(myPosition, this.locationTanker.get(i));
 					} catch(Exception e) {
@@ -292,21 +292,7 @@ public class WalkBehaviour extends SimpleBehaviour {
 
 
 
-
-
-
-
-
 		}
-
-
-
-
-
-
-
-
-
 
 
 	}
@@ -410,7 +396,7 @@ public class WalkBehaviour extends SimpleBehaviour {
 			}
 			if( nextNode != null) {
 				try {
-					nouv_chem =myMap.getShortestPath(myPosition, nextNode);
+					nouv_chem = myMap.getShortestPath(myPosition, nextNode);
 				} catch(Exception e) {
 					e.printStackTrace();
 					nextNode = null;

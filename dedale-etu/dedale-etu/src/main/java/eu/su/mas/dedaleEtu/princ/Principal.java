@@ -8,12 +8,9 @@ import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedale.mas.agents.dedaleDummyAgents.DummyWumpusShift;
 import eu.su.mas.dedale.mas.agents.GateKeeperAgent;
 
-import eu.su.mas.dedaleEtu.mas.agents.dummies.DummyMovingAgent;
-import eu.su.mas.dedaleEtu.mas.agents.dummies.DummyTankerAgent;
 import eu.su.mas.dedaleEtu.mas.agents.dummies.ExploreAgent;
 import eu.su.mas.dedaleEtu.mas.agents.dummies.TankerAgent;
 import eu.su.mas.dedaleEtu.mas.agents.dummies.CollectorAgent;
-//import eu.su.mas.dedaleEtu.mas.agents.yours.ExploreSoloAgentTestParam;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.core.Runtime;

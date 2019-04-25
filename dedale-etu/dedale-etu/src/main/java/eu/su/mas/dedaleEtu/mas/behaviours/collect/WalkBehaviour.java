@@ -423,11 +423,7 @@ public class WalkBehaviour extends SimpleBehaviour {
 				try {
 					nouv_chem = myMap.getShortestPath(myPosition, nextNode);
 				} catch(Exception e) {
-<<<<<<< HEAD
-//					e.printStackTrace();
-=======
 					//e.printStackTrace();
->>>>>>> f40f381a3eaed0799d8a59509212e1b9be0e488b
 					nextNode = null;
 				}
 			}

@@ -187,24 +187,7 @@ public class WalkBehaviour extends SimpleBehaviour{
 				}
 			}
 
-
-
-
-
-
-
-
 		}
-
-
-
-
-
-
-
-
-
-
 
 	}
 

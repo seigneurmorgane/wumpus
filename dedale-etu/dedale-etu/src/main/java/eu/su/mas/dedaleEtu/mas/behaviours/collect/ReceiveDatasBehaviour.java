@@ -1,6 +1,7 @@
 package eu.su.mas.dedaleEtu.mas.behaviours.collect;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import dataStructures.tuple.Couple;
@@ -11,7 +12,6 @@ import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
-import jade.util.leap.Iterator;
 
 public class ReceiveDatasBehaviour extends SimpleBehaviour{
 
@@ -52,12 +52,16 @@ public class ReceiveDatasBehaviour extends SimpleBehaviour{
 		while(msg != null) {
 			try {
 				if(msg.getContentObject().getClass().getSimpleName().equals("ArrayList")) {
-					this.locationTanker = (List<String>)msg.getContentObject();
+					List<String> tmp = (List<String>)msg.getContentObject();
 					List<String> tank = new ArrayList<String>();
-					Iterator iter = (Iterator) this.locationTanker.iterator();
-					iter.next();
+					Iterator<String> iter = tmp.iterator();
+					String S = iter.next();
+					this.locationTanker.clear();
+					this.locationTanker.add(S);
 					while(iter.hasNext()) {
-						tank.add((String) iter.next());
+						S = iter.next();
+						tank.add(S);
+						this.locationTanker.add(S);
 					}
 					Couple<String,List<String>> infos1 = new Couple<String,List<String>>(this.locationTanker.get(0),tank);
 					Couple<Integer,Couple<String,List<String>>> infos2 = new Couple<Integer,Couple<String,List<String>>>(0,infos1);

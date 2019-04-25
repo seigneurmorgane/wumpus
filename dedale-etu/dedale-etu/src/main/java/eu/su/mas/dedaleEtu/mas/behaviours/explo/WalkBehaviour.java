@@ -129,12 +129,14 @@ public class WalkBehaviour extends SimpleBehaviour{
 						this.path.add(nodeId.getLeft());
 					}
 				}
+				
 				if(!nodeId.getLeft().equals(myPosition)) {
 					if(!this.Edges.contains(new Couple<>(myPosition,nodeId.getLeft())) && !this.Edges.contains(new Couple<>(nodeId.getLeft(),myPosition))) {
 						this.Edges.add(new Couple<>(myPosition, nodeId.getLeft()));
 					}
 					this.myMap.addEdge(myPosition, nodeId.getLeft());
 				}
+				this.remplacerNoeud(nodeId.getLeft(), nodeId.getRight());
 				
 				
 			}
@@ -155,7 +157,7 @@ public class WalkBehaviour extends SimpleBehaviour{
 						this.path = myMap.getShortestPath(((AbstractDedaleAgent)this.myAgent).getCurrentPosition(), this.openNodes.get(0));
 						nextNode=this.path.get(0);
 					} catch(Exception e) {
-						e.printStackTrace();
+						//e.printStackTrace();
 						Random r= new Random();
 						int moveId=1+r.nextInt(lobs.size()-1);
 						nextNode = lobs.get(moveId).getLeft();
@@ -285,5 +287,20 @@ public class WalkBehaviour extends SimpleBehaviour{
 		else
 			return res;
 	}
+	
+	public void remplacerNoeud(String node, List<Couple<Observation,Integer>> obs) {
+		boolean b = true;
+		Iterator<Couple<String,List<Couple<Observation,Integer>>>> iter = this.closedNodes.iterator();
+		int i = 0;
+		while(iter.hasNext() && b) {
+			Couple<String,List<Couple<Observation,Integer>>> comp = iter.next();
+			if(comp.getLeft().equals(node)) {
+				comp = new Couple<String,List<Couple<Observation,Integer>>>(node,obs);
+				b = false;
+			}
+			
+		}
+		
 
+	}
 }

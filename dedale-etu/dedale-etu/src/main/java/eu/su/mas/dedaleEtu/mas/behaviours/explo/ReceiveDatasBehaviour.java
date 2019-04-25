@@ -1,6 +1,7 @@
 package eu.su.mas.dedaleEtu.mas.behaviours.explo;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import dataStructures.tuple.Couple;
@@ -11,8 +12,6 @@ import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
-import jade.util.leap.Iterator;
-import jade.util.leap.Set;
 
 public class ReceiveDatasBehaviour extends SimpleBehaviour{
 
@@ -53,7 +52,7 @@ public class ReceiveDatasBehaviour extends SimpleBehaviour{
 				if(msg.getContentObject().getClass().getSimpleName().equals("ArrayList")) {
 					List<String>locationTanker = (List<String>)msg.getContentObject();
 					List<String> tank = new ArrayList<String>();
-					Iterator iter = (Iterator) locationTanker.iterator();
+					Iterator<String> iter = locationTanker.iterator();
 					iter.next();
 					while(iter.hasNext()) {
 						tank.add((String) iter.next());

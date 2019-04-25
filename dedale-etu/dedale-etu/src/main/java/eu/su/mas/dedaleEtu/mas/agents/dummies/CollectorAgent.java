@@ -45,6 +45,8 @@ public class CollectorAgent extends AbstractDedaleAgent {
 	private List<String> otherOpenNodes = new ArrayList<String>();
 
 	private List<Couple<Integer,Couple<String,List<String>>>> otherPaths = new ArrayList<Couple<Integer,Couple<String,List<String>>>>();
+	private List<Observation> type_tresor = new ArrayList<Observation>();
+	private List<String> locationTanker = new ArrayList<String>();
 
 	//private Couple<String, List<Couple<Observation, Integer>>> nextNode;
 
@@ -88,10 +90,10 @@ public class CollectorAgent extends AbstractDedaleAgent {
 				this.edges, this.otherEdges), "Filtre");
 		fsm.registerState(new RandomWalkEndBehaviour(this), "RWalk");
 		fsm.registerState(new HelpRequiredBehaviour(this),"HReq");*/
-		fsm.registerState(new WalkBehaviour(this, this.myMap, this.closedNodes, this.otherClosedNodes,this.openNodes, this.Edges,this.otherEdges, this.path, this.otherPaths,this.otherOpenNodes), "Walk");;;
+		fsm.registerState(new WalkBehaviour(this, this.myMap, this.closedNodes, this.otherClosedNodes,this.openNodes, this.Edges,this.otherEdges, this.path, this.otherPaths,this.otherOpenNodes,this.type_tresor,this.locationTanker), "Walk");;;
 		fsm.registerState(new SendDatasBehaviour(this,this.closedNodes, this.Edges, this.path,this.openNodes),"Send");
-		fsm.registerState(new ReceiveDatasBehaviour(this,this.path,this.otherPaths,this.otherClosedNodes,this.otherEdges,this.otherOpenNodes,this.myMap),"Receive");
-		fsm.registerState(new HelpRequiredBehaviour(this),"Help");
+		fsm.registerState(new ReceiveDatasBehaviour(this,this.path,this.otherPaths,this.otherClosedNodes,this.otherEdges,this.otherOpenNodes,this.myMap,this.locationTanker),"Receive");
+		fsm.registerState(new HelpRequiredBehaviour(this,this.type_tresor),"Help");
 		
 
 		/************************************************

@@ -18,11 +18,13 @@ import jade.lang.acl.ACLMessage;
 public class HelpRequiredBehaviour extends SimpleBehaviour{
 
 	private static final long serialVersionUID = 6195172078037629487L;
+	private List<Observation> type_tresor;
 	private int attente = 0;
 	private boolean finished = false;
 
-	public HelpRequiredBehaviour(AbstractDedaleAgent myagent) {
+	public HelpRequiredBehaviour(AbstractDedaleAgent myagent, List<Observation> type_tresor) {
 		super(myagent);
+		this.type_tresor=type_tresor;
 	}
 
 
@@ -50,17 +52,32 @@ public class HelpRequiredBehaviour extends SimpleBehaviour{
 				int serrure = 0;
 				boolean ouvert = false;
 				//Observation tr_type = ((AbstractDedaleAgent)this.myAgent).getMyTreasureType();
+				int tresor = -1;
 				for (Couple<Observation, Integer> o : lobs.get(0).getRight()) {
 					if( ((AbstractDedaleAgent)this.myAgent).getBackPackFreeSpace()>0) {
 						switch (o.getLeft()) {
 						case DIAMOND:
+							if(type_tresor.contains(Observation.DIAMOND) && o.getRight()>0) {
+								ouvert = ((AbstractDedaleAgent)this.myAgent).openLock(o.getLeft());
+								if( ouvert ) {
+									tresor =((AbstractDedaleAgent) this.myAgent).pick();
+									System.out.println("collecté "+tresor);
+								}
+								else
+									tresor = 0;
+							}
 							break;
 						case GOLD:
-							ouvert = ((AbstractDedaleAgent)this.myAgent).openLock(o.getLeft());
-							if(ouvert) {
-								int tresor = ((AbstractDedaleAgent)this.myAgent).pick();
-								System.out.println("collecté "+tresor);
+							if(type_tresor.contains(Observation.GOLD) && o.getRight()>0) {
+								ouvert = ((AbstractDedaleAgent)this.myAgent).openLock(o.getLeft());
+								if(  ouvert) {
+									tresor = ((AbstractDedaleAgent) this.myAgent).pick();
+									System.out.println("collecté "+tresor);
+								}
+								else
+									tresor = 0;
 							}
+
 							break;
 						case LOCKPICKING:
 							serrure = o.getRight();
@@ -73,7 +90,23 @@ public class HelpRequiredBehaviour extends SimpleBehaviour{
 						}
 					}
 				}
+
+
+
+
 				if (!ouvert) {
+					for(Couple<Observation,Integer> obs : ((AbstractDedaleAgent)this.myAgent).getMyExpertise()) {
+						switch(obs.getLeft()) {
+						case LOCKPICKING:
+							serrure-= obs.getRight();
+							break;
+						case STRENGH:
+							force-= obs.getRight();
+							break;
+						default:
+							break;
+						}
+					}
 
 					infos.add(serrure);
 					infos.add(force);
@@ -105,7 +138,7 @@ public class HelpRequiredBehaviour extends SimpleBehaviour{
 		}catch (FIPAException | IOException e) {
 			e.printStackTrace();
 		}
-		
+
 
 	}
 
@@ -113,11 +146,11 @@ public class HelpRequiredBehaviour extends SimpleBehaviour{
 	public boolean done() {
 		return finished;
 	}
-	
-	
+
+
 	public int onEnd() {
 		return 2;
 	}
-	
+
 
 }

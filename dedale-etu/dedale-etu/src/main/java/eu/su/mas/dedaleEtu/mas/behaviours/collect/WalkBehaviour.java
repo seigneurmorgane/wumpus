@@ -275,12 +275,30 @@ public class WalkBehaviour extends SimpleBehaviour {
 				}
 			}
 
-
 			if(nextNode != null && tresor!= 0) {
 				this.finished=true;
 				try {
-					((AbstractDedaleAgent)this.myAgent).moveTo(nextNode);
-
+					if(!((AbstractDedaleAgent)this.myAgent).moveTo(nextNode)) {
+						if(this.openNodes.size() <= 1) {
+							this.myAgent.doWait(1000);
+							
+							List<String> ci = cheminsInterdits();
+							ci.add(nextNode);
+							
+							iter=lobs.iterator();
+							while(iter.hasNext()) {
+								Couple<String, List<Couple<Observation, Integer>>> nodeId=iter.next();
+								
+								if(!ci.contains(nodeId.getLeft())) {
+									System.out.println(nodeId.getLeft());
+									((AbstractDedaleAgent) this.myAgent).moveTo(nodeId.getLeft());
+									break;
+								}
+							}
+						}else{
+							this.openNodes.add(this.openNodes.remove(0));
+						}
+					}
 				} catch(Exception e) {
 					e.printStackTrace();
 				}
@@ -398,7 +416,7 @@ public class WalkBehaviour extends SimpleBehaviour {
 				try {
 					nouv_chem = myMap.getShortestPath(myPosition, nextNode);
 				} catch(Exception e) {
-					e.printStackTrace();
+//					e.printStackTrace();
 					nextNode = null;
 				}
 			}

@@ -55,8 +55,6 @@ public class SendNodeBehaviour extends OneShotBehaviour {
 						
 						msg.setContentObject(info);
 						((AbstractDedaleAgent) this.myAgent).sendMessage(msg);
-
-						System.out.println(this.myAgent.getLocalName() + " sent to " + dfd_res.getName().getLocalName());
 					}
 				}
 			}

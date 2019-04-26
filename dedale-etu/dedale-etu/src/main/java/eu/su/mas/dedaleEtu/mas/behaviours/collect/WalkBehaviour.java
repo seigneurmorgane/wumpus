@@ -266,10 +266,10 @@ public class WalkBehaviour extends SimpleBehaviour {
 					case GOLD:
 						//System.out.println("gold ici");
 						if(type_tresor.contains(Observation.GOLD) && o.getRight()>0) {
-							System.out.println("trying");
+							//System.out.println("trying");
 							if( ((AbstractDedaleAgent)this.myAgent).openLock(o.getLeft()) ) {
 								tresor = ((AbstractDedaleAgent) this.myAgent).pick();
-								//System.out.println("collecté "+tresor);
+								System.out.println("collecté " + tresor);
 							}
 							else
 								tresor = 0;
@@ -295,16 +295,16 @@ public class WalkBehaviour extends SimpleBehaviour {
 								nextNode = chem.get(moveId);
 								this.path.clear();
 								this.path.add(nextNode);
-								System.out.println(((AbstractDedaleAgent)this.myAgent).getLocalName()+" goes to "+nextNode);
+								//System.out.println(((AbstractDedaleAgent)this.myAgent).getLocalName()+" goes to "+nextNode);
 								((AbstractDedaleAgent)this.myAgent).moveTo(nextNode);
 							} else if (chem.size()==1) {
 								this.path.clear();
 								nextNode = chem.get(0);
 								this.path.add(nextNode);
-								System.out.println(((AbstractDedaleAgent)this.myAgent).getLocalName()+" goes to "+nextNode);
+								//System.out.println(((AbstractDedaleAgent)this.myAgent).getLocalName()+" goes to "+nextNode);
 								((AbstractDedaleAgent)this.myAgent).moveTo(nextNode);
 							} else {
-								System.out.println(((AbstractDedaleAgent)this.myAgent).getLocalName()+" waits ");
+								//System.out.println(((AbstractDedaleAgent)this.myAgent).getLocalName()+" waits ");
 								this.myAgent.doWait(500);
 							}
 							
@@ -468,7 +468,7 @@ public class WalkBehaviour extends SimpleBehaviour {
 	public List<String> cheminNonBloque(List<Couple<String,List<Couple<Observation,Integer>>>> lobs, String p) {
 		List<String> noeudsBloque = this.cheminsInterdits2();
 		noeudsBloque.add(p);
-		System.out.println(((AbstractDedaleAgent)this.myAgent).getLocalName()+ "can't go to "+noeudsBloque);
+		//System.out.println(((AbstractDedaleAgent)this.myAgent).getLocalName()+ "can't go to "+noeudsBloque);
 		List<String> way = obsString(lobs);
 		List<String> res = new ArrayList<String>();
 		for (String c : noeudsBloque) {

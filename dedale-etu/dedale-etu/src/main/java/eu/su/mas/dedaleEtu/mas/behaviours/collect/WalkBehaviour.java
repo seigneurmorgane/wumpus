@@ -66,7 +66,9 @@ public class WalkBehaviour extends SimpleBehaviour {
 
 	@Override
 	public void action() {
-		
+		System.out.println("walk");
+		this.trans = 2;
+
 		// création de la map
 		if(this.myMap == null) 
 			this.myMap = new MapRepresentation();
@@ -136,7 +138,7 @@ public class WalkBehaviour extends SimpleBehaviour {
 
 
 		if (myPosition != null ) {
-	
+
 			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();//myPosition
 			String nextNode=null;
 
@@ -250,38 +252,48 @@ public class WalkBehaviour extends SimpleBehaviour {
 
 			// example related to the use of the backpack for the treasure hunt
 			int tresor = -1;
-			for (Couple<Observation, Integer> o : lobs.get(0).getRight()) {
-				if( ((AbstractDedaleAgent)this.myAgent).getBackPackFreeSpace()>0) {
-					switch (o.getLeft()) {
-					case DIAMOND:
-						if(type_tresor.contains(Observation.DIAMOND) && o.getRight()>0) {
-							if( ((AbstractDedaleAgent)this.myAgent).openLock(o.getLeft()) ) {
-								tresor = ((AbstractDedaleAgent) this.myAgent).pick();
-								//System.out.println("collecté "+tresor);
+			if(this.path.size() == 0 || !(this.path.get(0).equals("-1"))) {
+				System.out.println("y'a-t-il un trésor ?");
+				for (Couple<Observation, Integer> o : lobs.get(0).getRight()) {
+					if( ((AbstractDedaleAgent)this.myAgent).getBackPackFreeSpace()>0) {
+						switch (o.getLeft()) {
+						case DIAMOND:
+							if(type_tresor.contains(Observation.DIAMOND) && o.getRight()>0) {
+								if( ((AbstractDedaleAgent)this.myAgent).openLock(o.getLeft()) ) {
+									tresor = ((AbstractDedaleAgent) this.myAgent).pick();
+									//System.out.println("collecté "+tresor);
+								}
+								else {
+									tresor = 0;
+									this.path.add(0,"-1");
+								}
 							}
-							else
-								tresor = 0;
-						}
-						break;
-					case GOLD:
-						//System.out.println("gold ici");
-						if(type_tresor.contains(Observation.GOLD) && o.getRight()>0) {
-							//System.out.println("trying");
-							if( ((AbstractDedaleAgent)this.myAgent).openLock(o.getLeft()) ) {
-								tresor = ((AbstractDedaleAgent) this.myAgent).pick();
-								System.out.println("collecté " + tresor);
+							break;
+						case GOLD:
+							//System.out.println("gold ici");
+							if(type_tresor.contains(Observation.GOLD) && o.getRight()>0) {
+								//System.out.println("trying");
+								if( ((AbstractDedaleAgent)this.myAgent).openLock(o.getLeft()) ) {
+									tresor = ((AbstractDedaleAgent) this.myAgent).pick();
+									System.out.println("collecté " + tresor);
+								}
+								else {
+									tresor = 0;
+									this.path.add(0,"-1");
+								}
 							}
-							else
-								tresor = 0;
-						}
 
-						break;
-					default:
-						break;
+							break;
+						default:
+							break;
+						}
 					}
 				}
+			} else if(this.path.size()>1 && this.path.get(0).equals("-1")) {
+				this.path.remove(0);
+				nextNode = this.path.get(0);
 			}
-
+			System.out.println(myPosition+" - "+this.path);
 			if(nextNode != null && tresor!= 0) {
 				this.finished=true;
 				try {
@@ -307,7 +319,7 @@ public class WalkBehaviour extends SimpleBehaviour {
 								//System.out.println(((AbstractDedaleAgent)this.myAgent).getLocalName()+" waits ");
 								this.myAgent.doWait(500);
 							}
-							
+
 						}else{
 							this.myAgent.doWait(100);
 							this.openNodes.add(this.openNodes.remove(0));
@@ -455,16 +467,16 @@ public class WalkBehaviour extends SimpleBehaviour {
 		}
 
 	}
-	
+
 	public List<String> cheminsInterdits2() {
 		List<String> chemins= new ArrayList<String>();
 		for (Couple<Integer,Couple<String,List<String>>> elem : this.otherPaths) {
-				chemins.add(elem.getRight().getRight().get(0));
+			chemins.add(elem.getRight().getRight().get(0));
 		}
 		return chemins;
 	}
-	
-	
+
+
 	public List<String> cheminNonBloque(List<Couple<String,List<Couple<Observation,Integer>>>> lobs, String p) {
 		List<String> noeudsBloque = this.cheminsInterdits2();
 		noeudsBloque.add(p);

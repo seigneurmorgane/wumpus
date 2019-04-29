@@ -38,7 +38,7 @@ public class ReceiveDatasBehaviour extends SimpleBehaviour{
 		this.otherEdges = otherEdges;
 		this.otherOpenNodes = otherOpenNodes;
 		this.myMap = myMap;
-		
+
 	}
 
 
@@ -49,6 +49,7 @@ public class ReceiveDatasBehaviour extends SimpleBehaviour{
 		ACLMessage msg = this.myAgent.receive(msgTemplate);
 		while(msg != null) {
 			try {
+				System.out.println( msg.getContentObject().getClass().getSimpleName());
 				if(msg.getContentObject().getClass().getSimpleName().equals("ArrayList")) {
 					List<String>locationTanker = (List<String>)msg.getContentObject();
 					List<String> tank = new ArrayList<String>();
@@ -60,13 +61,13 @@ public class ReceiveDatasBehaviour extends SimpleBehaviour{
 					Couple<String,List<String>> infos1 = new Couple<String,List<String>>(locationTanker.get(0),tank);
 					Couple<Integer,Couple<String,List<String>>> infos2 = new Couple<Integer,Couple<String,List<String>>>(0,infos1);
 					this.otherPaths.add(infos2);
-					
+
 				} else {
 
 
 
 					Couple<Object,Object> c_infos = (Couple<Object,Object>)msg.getContentObject();
-					if (c_infos.getLeft().getClass().getSimpleName().equals("String")) {
+					if (c_infos.getRight().getClass().getSimpleName().equals("ArrayList")) {
 						Couple<String,List<Integer>> help = (Couple<String,List<Integer>>) msg.getContentObject();
 						int force = 0;
 						int serrure = 0;
@@ -96,9 +97,12 @@ public class ReceiveDatasBehaviour extends SimpleBehaviour{
 					} else {
 						Couple<List<Couple<String,List<Couple<Observation,Integer>>>>,Couple<List<String>,Couple<List<Couple<String,String>>,Couple<Integer,Couple<String,List<String>>>>>> infos = 
 								(Couple<List<Couple<String,List<Couple<Observation,Integer>>>>,Couple<List<String>,Couple<List<Couple<String,String>>,Couple<Integer,Couple<String,List<String>>>>>>) msg.getContentObject();
-						this.otherClosedNodes.addAll(infos.getLeft());
-						this.otherOpenNodes.addAll(infos.getRight().getLeft());
-						this.otherEdges.addAll(infos.getRight().getRight().getLeft());
+						if (infos.getLeft() != null)
+							this.otherClosedNodes.addAll(infos.getLeft());
+						if (infos.getRight().getLeft() != null)
+							this.otherOpenNodes.addAll(infos.getRight().getLeft());
+						if(infos.getRight().getRight().getLeft() != null)
+							this.otherEdges.addAll(infos.getRight().getRight().getLeft());
 						this.otherPaths.add(infos.getRight().getRight().getRight());
 
 					}

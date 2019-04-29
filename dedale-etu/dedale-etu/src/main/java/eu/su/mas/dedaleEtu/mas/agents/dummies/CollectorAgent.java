@@ -93,7 +93,7 @@ public class CollectorAgent extends AbstractDedaleAgent {
 		fsm.registerState(new WalkBehaviour(this, this.myMap, this.closedNodes, this.otherClosedNodes,this.openNodes, this.Edges,this.otherEdges, this.path, this.otherPaths,this.otherOpenNodes,this.type_tresor,this.locationTanker), "Walk");;;
 		fsm.registerState(new SendDatasBehaviour(this,this.closedNodes, this.Edges, this.path,this.openNodes),"Send");
 		fsm.registerState(new ReceiveDatasBehaviour(this,this.path,this.otherPaths,this.otherClosedNodes,this.otherEdges,this.otherOpenNodes,this.myMap,this.locationTanker),"Receive");
-		fsm.registerState(new HelpRequiredBehaviour(this,this.type_tresor),"Help");
+		fsm.registerState(new HelpRequiredBehaviour(this,this.type_tresor, this.closedNodes,this.Edges,this.openNodes),"Help");
 		
 
 		/************************************************

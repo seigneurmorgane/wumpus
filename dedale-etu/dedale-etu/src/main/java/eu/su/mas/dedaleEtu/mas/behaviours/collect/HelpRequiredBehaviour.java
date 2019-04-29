@@ -19,10 +19,14 @@ public class HelpRequiredBehaviour extends SimpleBehaviour{
 
 	private static final long serialVersionUID = 6195172078037629487L;
 	private List<Observation> type_tresor;
+	private List<Couple<String,List<Couple<Observation,Integer>>>> closedNodes;
+	private List<Couple<String,String>> Edges;
+	private List<String> openNodes;
 	private int attente = 0;
 	private boolean finished = false;
 
-	public HelpRequiredBehaviour(AbstractDedaleAgent myagent, List<Observation> type_tresor) {
+	public HelpRequiredBehaviour(AbstractDedaleAgent myagent, List<Observation> type_tresor, List<Couple<String,List<Couple<Observation,Integer>>>> closedNodes,
+			List<Couple<String,String>> Edges, List<String> openNodes){
 		super(myagent);
 		this.type_tresor=type_tresor;
 	}
@@ -30,9 +34,11 @@ public class HelpRequiredBehaviour extends SimpleBehaviour{
 
 	@Override
 	public void action() {
-
+		System.out.println("help");
+		this.finished=false;
 		attente++;
 		System.out.println(attente);
+		this.sendInfos();
 		this.myAgent.doWait(100);
 		DFAgentDescription dfd = new DFAgentDescription();
 		ServiceDescription sd = new ServiceDescription();
@@ -119,15 +125,17 @@ public class HelpRequiredBehaviour extends SimpleBehaviour{
 							msg.addReceiver(new AID(dfd_res.getName().getLocalName(), AID.ISLOCALNAME));
 							// 2° compute the random value
 							Couple<String,List<Integer>> to_send = new Couple<String,List<Integer>>(myPosition,infos);
+							//System.out.println("j'envoie "+to_send);
 							msg.setContentObject((Couple<String,List<Integer>>) to_send);
 							((AbstractDedaleAgent) this.myAgent).sendMessage(msg);
 						}
 
 					}
-					this.attente++;
+					//this.attente++;
 
 				}
 				if(ouvert || this.attente > 20) {
+					System.out.println(ouvert);
 					this.finished = true;
 					this.attente = 0;
 				}
@@ -150,6 +158,67 @@ public class HelpRequiredBehaviour extends SimpleBehaviour{
 
 	public int onEnd() {
 		return 2;
+	}
+
+	public void sendInfos() {
+		DFAgentDescription dfd = new DFAgentDescription();
+		ServiceDescription sd = new ServiceDescription();
+		dfd.addServices(sd);
+		DFAgentDescription[] result;
+
+		String myPosition = ((AbstractDedaleAgent)this.myAgent).getCurrentPosition();
+
+		try {
+			result = DFService.search(this.myAgent, dfd);
+			if (result == null || result.length <= 0) {
+				System.out.println("Search returns null");
+			} else {
+
+				List<String> tmp = new ArrayList<String>();
+				tmp.add(myPosition);
+				// les priorités
+				Couple<String,List<String>> prio = new Couple<String,List<String>>(((AbstractDedaleAgent)this.myAgent).getLocalName(),tmp);
+				int sac = ((AbstractDedaleAgent)this.myAgent).getBackPackFreeSpace();
+				Couple<Integer,Couple<String,List<String>>> tmp2 = new Couple<Integer,Couple<String,List<String>>>(sac,prio);
+				// les aretes + priorité
+				Couple<List<Couple<String,String>>,Couple<Integer,Couple<String,List<String>>>> aretes = new Couple<List<Couple<String,String>>,Couple<Integer,Couple<String,List<String>>>>(this.Edges,tmp2);
+
+				// les noeuds ouverts + aretes + priorité
+				Couple<List<String>,Couple<List<Couple<String,String>>,Couple<Integer,Couple<String,List<String>>>>> ouverts = new Couple<List<String>,Couple<List<Couple<String,String>>,Couple<Integer,Couple<String,List<String>>>>>(this.openNodes,aretes);
+
+				// les noeuds fermés + ouverts + aretes + priorité
+				Couple<List<Couple<String,List<Couple<Observation,Integer>>>>,Couple<List<String>,Couple<List<Couple<String,String>>,Couple<Integer,Couple<String,List<String>>>>>> infos = 
+						new Couple<List<Couple<String,List<Couple<Observation,Integer>>>>,Couple<List<String>,Couple<List<Couple<String,String>>,Couple<Integer,Couple<String,List<String>>>>>>(this.closedNodes,ouverts);
+
+				for (DFAgentDescription dfd_res : result) {
+					if (!dfd_res.getName().getLocalName().equals(this.myAgent.getLocalName())) {
+						// 1°Create the message
+
+
+
+
+						final ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+
+						msg.setContentObject(
+								(Couple<List<Couple<String,List<Couple<Observation,Integer>>>>,Couple<List<String>,Couple<List<Couple<String,String>>,Couple<Integer,Couple<String,List<String>>>>>>)infos);
+
+
+						msg.setSender(this.myAgent.getAID());
+						msg.addReceiver(new AID(dfd_res.getName().getLocalName(), AID.ISLOCALNAME));
+
+						// 2° compute the random value
+
+						((AbstractDedaleAgent) this.myAgent).sendMessage(msg);
+
+					}
+				}
+			}
+		} catch (FIPAException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 

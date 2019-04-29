@@ -1,1 +1,1 @@
-( ap-description  :name "Ithaq" :ap-services (set ( ap-service  :name fipa.mts.mtp.http.std :type fipa.mts.mtp.http.std :addresses (sequence http://openroam-prg-gm-1-131-69.net.univ-paris-diderot.fr:7778/acc))))
+( ap-description  :name "Ithaq" :ap-services (set ( ap-service  :name fipa.mts.mtp.http.std :type fipa.mts.mtp.http.std :addresses (sequence http://mbp-de-morgane:7778/acc))))

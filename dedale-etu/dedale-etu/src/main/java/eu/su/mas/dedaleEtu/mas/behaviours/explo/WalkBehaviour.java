@@ -274,7 +274,7 @@ public class WalkBehaviour extends SimpleBehaviour{
 		return newlobs;
 	}
 
-	// détermine quel chemin prendre pr ne bloquer aucun agent en fonction des priorités
+	// détermine quel chemin prendre pour ne bloquer aucun agent en fonction des priorités
 	public List<String> whichWay(List<Couple<String,List<Couple<Observation,Integer>>>> lobs, String p) {
 		List<String> way = obsString(lobs);
 		List<String> chems = this.cheminsInterdits();

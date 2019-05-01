@@ -37,7 +37,6 @@ public class SendDatasBehaviour extends OneShotBehaviour{
 	
 	@Override
 	public void action() {
-		System.out.println("send");
 		DFAgentDescription dfd = new DFAgentDescription();
 		ServiceDescription sd = new ServiceDescription();
 		dfd.addServices(sd);

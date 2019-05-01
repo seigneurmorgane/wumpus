@@ -26,7 +26,6 @@ public class ReceiveDatasBehaviour extends SimpleBehaviour{
 	private List<String> otherOpenNodes;
 	private MapRepresentation myMap;
 	private boolean finished = false;
-
 	private List<Couple<String,String>> help;
 
 	public ReceiveDatasBehaviour(final AbstractDedaleAgent myagent, List<String> path, List<Couple<Integer,Couple<String,List<String>>>> otherPaths,
@@ -50,7 +49,6 @@ public class ReceiveDatasBehaviour extends SimpleBehaviour{
 		ACLMessage msg = this.myAgent.receive(msgTemplate);
 		while(msg != null) {
 			try {
-				System.out.println( msg.getContentObject().getClass().getSimpleName());
 				if(msg.getContentObject().getClass().getSimpleName().equals("ArrayList")) {
 					List<String>locationTanker = (List<String>)msg.getContentObject();
 					List<String> tank = new ArrayList<String>();
@@ -85,11 +83,6 @@ public class ReceiveDatasBehaviour extends SimpleBehaviour{
 							}
 						}
 						if(serrure >= help.getRight().get(0) || force >= help.getRight().get(1)) {
-//							try {
-//								this.path = myMap.getShortestPath(((AbstractDedaleAgent)this.myAgent).getCurrentPosition(), help.getLeft());
-//							} catch(Exception e) {
-//								System.out.println("je ne peux pas t'aider, je ne peux pas accéder à ta position");
-//							}
 							this.help.add(new Couple<>(((AbstractDedaleAgent)this.myAgent).getCurrentPosition(), help.getLeft()));
 						}
 						

@@ -34,10 +34,8 @@ public class HelpRequiredBehaviour extends SimpleBehaviour{
 
 	@Override
 	public void action() {
-//		System.out.println("help");
 		this.finished=false;
 		attente++;
-//		System.out.println(attente);
 		this.sendInfos();
 		this.myAgent.doWait(100);
 		DFAgentDescription dfd = new DFAgentDescription();
@@ -57,7 +55,6 @@ public class HelpRequiredBehaviour extends SimpleBehaviour{
 				int force = 0;
 				int serrure = 0;
 				boolean ouvert = false;
-				//Observation tr_type = ((AbstractDedaleAgent)this.myAgent).getMyTreasureType();
 				int tresor = -1;
 				for (Couple<Observation, Integer> o : lobs.get(0).getRight()) {
 					if( ((AbstractDedaleAgent)this.myAgent).getBackPackFreeSpace()>0) {
@@ -67,7 +64,7 @@ public class HelpRequiredBehaviour extends SimpleBehaviour{
 								ouvert = ((AbstractDedaleAgent)this.myAgent).openLock(o.getLeft());
 								if( ouvert ) {
 									tresor =((AbstractDedaleAgent) this.myAgent).pick();
-									System.out.println("collecté "+tresor);
+									System.out.println("collecté : "+tresor);
 								}
 								else
 									tresor = 0;
@@ -125,7 +122,7 @@ public class HelpRequiredBehaviour extends SimpleBehaviour{
 							msg.addReceiver(new AID(dfd_res.getName().getLocalName(), AID.ISLOCALNAME));
 							// 2° compute the random value
 							Couple<String,List<Integer>> to_send = new Couple<String,List<Integer>>(myPosition,infos);
-							//System.out.println("j'envoie "+to_send);
+							
 							msg.setContentObject((Couple<String,List<Integer>>) to_send);
 							((AbstractDedaleAgent) this.myAgent).sendMessage(msg);
 						}
@@ -135,7 +132,6 @@ public class HelpRequiredBehaviour extends SimpleBehaviour{
 
 				}
 				if(ouvert || this.attente > 20) {
-					System.out.println(ouvert);
 					this.finished = true;
 					this.attente = 0;
 				}

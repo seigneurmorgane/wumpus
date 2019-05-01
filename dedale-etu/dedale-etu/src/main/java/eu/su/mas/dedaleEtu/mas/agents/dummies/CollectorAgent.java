@@ -28,10 +28,6 @@ public class CollectorAgent extends AbstractDedaleAgent {
 
 	private static final long serialVersionUID = -1784844593772918359L;
 
-	/**
-	 * when block, interlocutor name
-	 */
-	//private List<String> interlocutor = new ArrayList<>();
 
 	private MapRepresentation myMap;
 	private List<Couple<String, List<Couple<Observation, Integer>>>> closedNodes = new ArrayList<Couple<String, List<Couple<Observation, Integer>>>>();
@@ -47,8 +43,8 @@ public class CollectorAgent extends AbstractDedaleAgent {
 	private List<Couple<Integer,Couple<String,List<String>>>> otherPaths = new ArrayList<Couple<Integer,Couple<String,List<String>>>>();
 	private List<Observation> type_tresor = new ArrayList<Observation>();
 	private List<String> locationTanker = new ArrayList<String>();
-
-	//private Couple<String, List<Couple<Observation, Integer>>> nextNode;
+	
+	private List<Couple<String,String>> help = new ArrayList<>();
 
 	/**
 	 * This method is automatically called when "agent".start() is executed.
@@ -79,21 +75,9 @@ public class CollectorAgent extends AbstractDedaleAgent {
 		 ************************************************/
 		
 		fsm.registerFirstState(new InitDFBehaviour(this, "Collect"), "DF");
-		/*fsm.registerState(new WalkBehaviour(this, this.myMap, this.closedNodes, this.openNodes, this.edges,
-				this.otherClosedNodes, this.otherEdges, this.path), "Walk");
-		fsm.registerState(new SendNameBehaviour(this), "SendName");
-		fsm.registerState(new ReceiveNameBehaviour(this, this.interlocutor), "RName");
-		fsm.registerState(new SendInfosBehaviour(this, this.interlocutor, this.closedNodes, this.edges, this.path),
-				"SInfos");
-		fsm.registerState(new ReceiveInfosBehaviour(this, this.otherClosedNodes, this.otherEdges, this.path), "RInfos");
-		fsm.registerState(new WalkBackBehaviour(this, this.nextNode), "WalkBack");
-		fsm.registerState(new SortBehaviour(this, this.myMap, this.openNodes, this.closedNodes, this.otherClosedNodes,
-				this.edges, this.otherEdges), "Filtre");
-		fsm.registerState(new RandomWalkEndBehaviour(this), "RWalk");
-		fsm.registerState(new HelpRequiredBehaviour(this),"HReq");*/
-		fsm.registerState(new WalkBehaviour(this, this.myMap, this.closedNodes, this.otherClosedNodes,this.openNodes, this.Edges,this.otherEdges, this.path, this.otherPaths,this.otherOpenNodes,this.type_tresor,this.locationTanker), "Walk");
+		fsm.registerState(new WalkBehaviour(this, this.myMap, this.closedNodes, this.otherClosedNodes,this.openNodes, this.Edges,this.otherEdges, this.path, this.otherPaths,this.otherOpenNodes,this.type_tresor,this.locationTanker,this.help), "Walk");
 		fsm.registerState(new SendDatasBehaviour(this,this.closedNodes, this.Edges, this.path,this.openNodes),"Send");
-		fsm.registerState(new ReceiveDatasBehaviour(this,this.path,this.otherPaths,this.otherClosedNodes,this.otherEdges,this.otherOpenNodes,this.myMap,this.locationTanker),"Receive");
+		fsm.registerState(new ReceiveDatasBehaviour(this,this.path,this.otherPaths,this.otherClosedNodes,this.otherEdges,this.otherOpenNodes,this.myMap,this.locationTanker,this.help),"Receive");
 		fsm.registerState(new HelpRequiredBehaviour(this,this.type_tresor, this.closedNodes,this.Edges,this.openNodes),"Help");
 		
 
@@ -103,21 +87,6 @@ public class CollectorAgent extends AbstractDedaleAgent {
 		 * 
 		 ************************************************/
 		fsm.registerDefaultTransition("DF", "Walk");
-		/*fsm.registerTransition("Walk", "Walk", 1);
-		fsm.registerTransition("Walk", "RWalk", 8);
-		fsm.registerTransition("Walk", "SendName", 2);
-		fsm.registerTransition("SendName", "RName", 3);
-		fsm.registerTransition("RName", "SInfos", 4);
-		fsm.registerTransition("RName", "Walk", 1);
-		fsm.registerTransition("SInfos", "RInfos", 5);
-		fsm.registerTransition("SInfos", "Walk", 1);
-		fsm.registerTransition("RInfos", "WalkBack", 6);
-		fsm.registerTransition("RInfos", "Filtre", 7);
-		fsm.registerTransition("WalkBack", "Filtre", 7);
-		fsm.registerTransition("Filtre", "Walk", 1);*/
-		/*fsm.registerTransition("HReq","HReq",9);
-		fsm.registerTransition("HReq","Walk",1);
-		fsm.registerTransition("Walk","HReq",9);*/
 		fsm.registerTransition("Walk", "Send",2);
 		fsm.registerTransition("Walk", "Help", 4);
 		fsm.registerTransition("Send", "Receive",3);

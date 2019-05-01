@@ -29,7 +29,6 @@ public class WalkBehaviour extends SimpleBehaviour{
 	private List<Couple<Integer,Couple<String,List<String>>>> otherPaths;
 	private List<String> otherOpenNodes;
 	private boolean finished = false;
-	
 	private List<Couple<String,String>> help;
 
 	public WalkBehaviour(final AbstractDedaleAgent myagent, MapRepresentation myMap, List<Couple<String,List<Couple<Observation,Integer>>>> closedNodes,
@@ -98,14 +97,12 @@ public class WalkBehaviour extends SimpleBehaviour{
 			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();//myPosition
 			String nextNode=null;
 			
-			if(!this.help.isEmpty()) {
+			if(!this.help.isEmpty() && (this.path.size() == 0 || (this.path.size() == 1 && this.path.get(0).equals(myPosition)))) {
 				Couple<String,String> way = this.help.remove(0);
 				try {
 					this.path = this.myMap.getShortestPath(way.getLeft(),way.getRight());
 					this.path.add(0, way.getLeft());
-				} catch(Exception e) {
-					System.out.println("je ne peux pas t'aider, je ne peux pas accéder à ta position");
-				}
+				} catch(Exception e) {}
 			}
 
 			// maj du path si nécessaire
@@ -204,16 +201,13 @@ public class WalkBehaviour extends SimpleBehaviour{
 								nextNode = chem.get(moveId);
 								this.path.clear();
 								this.path.add(nextNode);
-								System.out.println(((AbstractDedaleAgent)this.myAgent).getLocalName()+" goes to "+nextNode);
 								((AbstractDedaleAgent)this.myAgent).moveTo(nextNode);
 							} else if (chem.size()==1) {
 								this.path.clear();
 								nextNode = chem.get(0);
 								this.path.add(nextNode);
-								System.out.println(((AbstractDedaleAgent)this.myAgent).getLocalName()+" goes to "+nextNode);
 								((AbstractDedaleAgent)this.myAgent).moveTo(nextNode);
 							} else {
-								System.out.println(((AbstractDedaleAgent)this.myAgent).getLocalName()+" waits");
 								this.myAgent.doWait(500);
 							}
 							
@@ -339,7 +333,6 @@ public class WalkBehaviour extends SimpleBehaviour{
 	public List<String> cheminNonBloque(List<Couple<String,List<Couple<Observation,Integer>>>> lobs, String p) {
 		List<String> noeudsBloque = this.cheminsInterdits2();
 		noeudsBloque.add(p);
-		System.out.println(((AbstractDedaleAgent)this.myAgent).getLocalName()+ "can't go to "+noeudsBloque);
 		List<String> way = obsString(lobs);
 		List<String> res = new ArrayList<String>();
 		for (String c : noeudsBloque) {

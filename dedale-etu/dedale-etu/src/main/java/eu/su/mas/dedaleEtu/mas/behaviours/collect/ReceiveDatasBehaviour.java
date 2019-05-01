@@ -27,11 +27,12 @@ public class ReceiveDatasBehaviour extends SimpleBehaviour{
 	private MapRepresentation myMap;
 	private List<String> locationTanker;
 	private boolean finished = false;
+	private List<Couple<String,String>> help;
 
 
 	public ReceiveDatasBehaviour(final AbstractDedaleAgent myagent, List<String> path, List<Couple<Integer,Couple<String,List<String>>>> otherPaths,
 			List<Couple<String, List<Couple<Observation, Integer>>>> otherClosedNodes, List<Couple<String, String>> otherEdges, List<String> otherOpenNodes,
-			MapRepresentation myMap, List<String> locationTanker) {
+			MapRepresentation myMap, List<String> locationTanker, List<Couple<String,String>> help) {
 		super(myagent);
 		this.path = path;
 		this.otherPaths = otherPaths;
@@ -40,6 +41,7 @@ public class ReceiveDatasBehaviour extends SimpleBehaviour{
 		this.otherOpenNodes = otherOpenNodes;
 		this.myMap = myMap;
 		this.locationTanker = locationTanker;
+		this.help = help;
 
 	}
 
@@ -90,11 +92,8 @@ public class ReceiveDatasBehaviour extends SimpleBehaviour{
 						}
 
 						if(serrure >= help.getRight().get(0) || force >= help.getRight().get(1)) {
-							try {
-								this.path = myMap.getShortestPath(((AbstractDedaleAgent)this.myAgent).getCurrentPosition(), help.getLeft());
-							} catch(Exception e) {
-								System.out.println("je ne peux pas t'aider, je ne peux pas accéder à ta position");
-							}
+							this.help.add(new Couple<>(((AbstractDedaleAgent)this.myAgent).getCurrentPosition(), help.getLeft()));
+							
 						}
 
 

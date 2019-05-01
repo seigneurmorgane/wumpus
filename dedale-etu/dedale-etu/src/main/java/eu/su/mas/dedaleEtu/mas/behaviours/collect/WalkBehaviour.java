@@ -45,11 +45,12 @@ public class WalkBehaviour extends SimpleBehaviour {
 	private List<String> otherOpenNodes;
 	private List<Observation> type_tresor;
 	private List<String> locationTanker;
+	private List<Couple<String,String>> help;
 
 	public WalkBehaviour(final AbstractDedaleAgent myagent, MapRepresentation myMap, List<Couple<String,List<Couple<Observation,Integer>>>> closedNodes,
 			List<Couple<String,List<Couple<Observation,Integer>>>> otherClosedNodes, List<String> openNodes, List<Couple<String,String>> Edges, 
 			List<Couple<String,String>> otherEdges, List<String> path, List<Couple<Integer,Couple<String,List<String>>>> otherPaths, List<String> otherOpenNodes,
-			List<Observation> type_tresor,List<String> locationTanker) {
+			List<Observation> type_tresor,List<String> locationTanker, List<Couple<String,String>> help) {
 		super(myagent);
 		this.myMap = myMap;
 		this.closedNodes = closedNodes;
@@ -62,11 +63,11 @@ public class WalkBehaviour extends SimpleBehaviour {
 		this.otherOpenNodes = otherOpenNodes;
 		this.type_tresor = type_tresor;
 		this.locationTanker = locationTanker;
+		this.help = help;
 	}
 
 	@Override
 	public void action() {
-//		System.out.println("walk");
 		this.trans = 2;
 
 		// création de la map
@@ -78,11 +79,7 @@ public class WalkBehaviour extends SimpleBehaviour {
 
 		//Vide son sac
 		if(!this.locationTanker.isEmpty()) {
-			//System.out.println("Essaye de vider son sac : " + ((AbstractDedaleAgent)this.myAgent).getBackPackFreeSpace());
-			boolean emptyBackPack = ((AbstractDedaleAgent)this.myAgent).emptyMyBackPack(this.locationTanker.get(0));
-			if(emptyBackPack) {
-				//System.out.println("Sac bien vidé : " + ((AbstractDedaleAgent)this.myAgent).getBackPackFreeSpace());
-			}	
+			((AbstractDedaleAgent)this.myAgent).emptyMyBackPack(this.locationTanker.get(0));
 		}
 
 		// ajoute les noeuds fermés récupérés à partir d'une communication
@@ -141,6 +138,14 @@ public class WalkBehaviour extends SimpleBehaviour {
 
 			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();//myPosition
 			String nextNode=null;
+			
+			if(!this.help.isEmpty() && (this.path.size() == 0 || (this.path.size() == 1 && this.path.get(0).equals(myPosition)))) {
+				Couple<String,String> way = this.help.remove(0);
+				try {
+					this.path = this.myMap.getShortestPath(way.getLeft(),way.getRight());
+					this.path.add(0, way.getLeft());
+				} catch(Exception e) {}
+			}
 
 
 			// maj du path si nécessaire
@@ -160,7 +165,6 @@ public class WalkBehaviour extends SimpleBehaviour {
 
 			// chemin vers un trésor si l'agent ne sait pas où aller
 			if( this.path.size() == 0 && ((AbstractDedaleAgent)this.myAgent).getBackPackFreeSpace()>0) {
-				//System.out.println("ou sont les trésors ?");
 				this.path = cheminTresor(myPosition);
 			}
 
@@ -169,9 +173,7 @@ public class WalkBehaviour extends SimpleBehaviour {
 				for (int i = 2 ; i < this.locationTanker.size() && this.path.size()==0; i++) {
 					try {
 						this.path = myMap.getShortestPath(myPosition, this.locationTanker.get(i));
-					} catch(Exception e) {
-						//e.printStackTrace();
-					}
+					} catch(Exception e) {}
 				}
 
 			}
@@ -227,7 +229,6 @@ public class WalkBehaviour extends SimpleBehaviour {
 						this.path = myMap.getShortestPath(myPosition, this.openNodes.get(0));
 						nextNode=this.path.get(0);
 					} catch(Exception e) {
-						//e.printStackTrace();
 						Random r= new Random();
 						int moveId=1+r.nextInt(lobs.size()-1);
 						nextNode = lobs.get(moveId).getLeft();
@@ -250,10 +251,8 @@ public class WalkBehaviour extends SimpleBehaviour {
 
 
 
-			// example related to the use of the backpack for the treasure hunt
 			int tresor = -1;
 			if(this.path.size() == 0 || !(this.path.get(0).equals("-1"))) {
-				System.out.println("y'a-t-il un trésor ?");
 				for (Couple<Observation, Integer> o : lobs.get(0).getRight()) {
 					if( ((AbstractDedaleAgent)this.myAgent).getBackPackFreeSpace()>0) {
 						switch (o.getLeft()) {
@@ -261,7 +260,7 @@ public class WalkBehaviour extends SimpleBehaviour {
 							if(type_tresor.contains(Observation.DIAMOND) && o.getRight()>0) {
 								if( ((AbstractDedaleAgent)this.myAgent).openLock(o.getLeft()) ) {
 									tresor = ((AbstractDedaleAgent) this.myAgent).pick();
-									//System.out.println("collecté "+tresor);
+									System.out.println("collecté :"+tresor);
 								}
 								else {
 									tresor = 0;
@@ -270,12 +269,10 @@ public class WalkBehaviour extends SimpleBehaviour {
 							}
 							break;
 						case GOLD:
-							//System.out.println("gold ici");
 							if(type_tresor.contains(Observation.GOLD) && o.getRight()>0) {
-								//System.out.println("trying");
 								if( ((AbstractDedaleAgent)this.myAgent).openLock(o.getLeft()) ) {
 									tresor = ((AbstractDedaleAgent) this.myAgent).pick();
-									System.out.println("collecté " + tresor);
+									System.out.println("collecté :" + tresor);
 								}
 								else {
 									tresor = 0;
@@ -293,7 +290,6 @@ public class WalkBehaviour extends SimpleBehaviour {
 				this.path.remove(0);
 				nextNode = this.path.get(0);
 			}
-			System.out.println(myPosition+" - "+this.path);
 			if(nextNode != null && tresor!= 0) {
 				this.finished=true;
 				try {
@@ -307,16 +303,13 @@ public class WalkBehaviour extends SimpleBehaviour {
 								nextNode = chem.get(moveId);
 								this.path.clear();
 								this.path.add(nextNode);
-								//System.out.println(((AbstractDedaleAgent)this.myAgent).getLocalName()+" goes to "+nextNode);
 								((AbstractDedaleAgent)this.myAgent).moveTo(nextNode);
 							} else if (chem.size()==1) {
 								this.path.clear();
 								nextNode = chem.get(0);
 								this.path.add(nextNode);
-								//System.out.println(((AbstractDedaleAgent)this.myAgent).getLocalName()+" goes to "+nextNode);
 								((AbstractDedaleAgent)this.myAgent).moveTo(nextNode);
 							} else {
-								//System.out.println(((AbstractDedaleAgent)this.myAgent).getLocalName()+" waits ");
 								this.myAgent.doWait(500);
 							}
 
@@ -443,7 +436,6 @@ public class WalkBehaviour extends SimpleBehaviour {
 				try {
 					nouv_chem = myMap.getShortestPath(myPosition, nextNode);
 				} catch(Exception e) {
-					//e.printStackTrace();
 					nextNode = null;
 				}
 			}
@@ -480,7 +472,6 @@ public class WalkBehaviour extends SimpleBehaviour {
 	public List<String> cheminNonBloque(List<Couple<String,List<Couple<Observation,Integer>>>> lobs, String p) {
 		List<String> noeudsBloque = this.cheminsInterdits2();
 		noeudsBloque.add(p);
-		//System.out.println(((AbstractDedaleAgent)this.myAgent).getLocalName()+ "can't go to "+noeudsBloque);
 		List<String> way = obsString(lobs);
 		List<String> res = new ArrayList<String>();
 		for (String c : noeudsBloque) {

@@ -66,7 +66,7 @@ public class WalkBehaviour extends SimpleBehaviour {
 
 	@Override
 	public void action() {
-		System.out.println("walk");
+//		System.out.println("walk");
 		this.trans = 2;
 
 		// création de la map

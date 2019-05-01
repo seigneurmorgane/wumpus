@@ -34,10 +34,10 @@ public class HelpRequiredBehaviour extends SimpleBehaviour{
 
 	@Override
 	public void action() {
-		System.out.println("help");
+//		System.out.println("help");
 		this.finished=false;
 		attente++;
-		System.out.println(attente);
+//		System.out.println(attente);
 		this.sendInfos();
 		this.myAgent.doWait(100);
 		DFAgentDescription dfd = new DFAgentDescription();

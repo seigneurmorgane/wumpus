@@ -25,7 +25,7 @@ public class SendDatasBehaviour extends OneShotBehaviour{
 	private List<Couple<String,String>> Edges;
 	private List<String> path;
 	private List<String> openNodes;
-
+	
 	public SendDatasBehaviour(AbstractDedaleAgent myagent,List<Couple<String,List<Couple<Observation,Integer>>>> closedNodes,
 			List<Couple<String,String>> Edges, List<String> path, List<String> openNodes) {
 		super(myagent);

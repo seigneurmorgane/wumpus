@@ -28,6 +28,7 @@ public class ExploreAgent extends AbstractDedaleAgent{
 	private List<Couple<Integer,Couple<String,List<String>>>> otherPaths = new ArrayList<Couple<Integer,Couple<String,List<String>>>>();
 	private List<String> otherOpenNodes = new ArrayList<String>();
 
+	private List<Couple<String,String>> help = new ArrayList<>();
 
 	protected void setup() {
 		super.setup();
@@ -52,9 +53,9 @@ public class ExploreAgent extends AbstractDedaleAgent{
 
 		// definiton des etats
 		fsm.registerFirstState(new InitDFBehaviour(this, "Explo"), "DF");
-		fsm.registerState(new WalkBehaviour(this, this.myMap, this.closedNodes, this.otherClosedNodes,this.openNodes, this.Edges,this.otherEdges, this.path, this.otherPaths,this.otherOpenNodes), "Walk");;;
+		fsm.registerState(new WalkBehaviour(this, this.myMap, this.closedNodes, this.otherClosedNodes,this.openNodes, this.Edges,this.otherEdges, this.path, this.otherPaths,this.otherOpenNodes,this.help), "Walk");
 		fsm.registerState(new SendDatasBehaviour(this,this.closedNodes, this.Edges, this.path,this.openNodes),"Send");
-		fsm.registerState(new ReceiveDatasBehaviour(this,this.path,this.otherPaths,this.otherClosedNodes,this.otherEdges,this.otherOpenNodes,this.myMap),"Receive");
+		fsm.registerState(new ReceiveDatasBehaviour(this,this.path,this.otherPaths,this.otherClosedNodes,this.otherEdges,this.otherOpenNodes,this.myMap,this.help),"Receive");
 
 
 		// definition des transaction

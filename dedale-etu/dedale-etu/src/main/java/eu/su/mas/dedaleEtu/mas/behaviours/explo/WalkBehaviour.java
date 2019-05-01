@@ -29,10 +29,12 @@ public class WalkBehaviour extends SimpleBehaviour{
 	private List<Couple<Integer,Couple<String,List<String>>>> otherPaths;
 	private List<String> otherOpenNodes;
 	private boolean finished = false;
+	
+	private List<Couple<String,String>> help;
 
 	public WalkBehaviour(final AbstractDedaleAgent myagent, MapRepresentation myMap, List<Couple<String,List<Couple<Observation,Integer>>>> closedNodes,
 			List<Couple<String,List<Couple<Observation,Integer>>>> otherClosedNodes, List<String> openNodes, List<Couple<String,String>> Edges, 
-			List<Couple<String,String>> otherEdges, List<String> path, List<Couple<Integer,Couple<String,List<String>>>> otherPaths, List<String> otherOpenNodes) {
+			List<Couple<String,String>> otherEdges, List<String> path, List<Couple<Integer,Couple<String,List<String>>>> otherPaths, List<String> otherOpenNodes, List<Couple<String,String>> help) {
 		super(myagent);
 		this.myMap = myMap;
 		this.closedNodes = closedNodes;
@@ -43,7 +45,7 @@ public class WalkBehaviour extends SimpleBehaviour{
 		this.path = path;
 		this.otherPaths = otherPaths;
 		this.otherOpenNodes = otherOpenNodes;
-
+		this.help = help;
 	}
 
 	@Override
@@ -95,7 +97,16 @@ public class WalkBehaviour extends SimpleBehaviour{
 		if (myPosition != null ) {
 			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();//myPosition
 			String nextNode=null;
-
+			
+			if(!this.help.isEmpty()) {
+				Couple<String,String> way = this.help.remove(0);
+				try {
+					this.path = this.myMap.getShortestPath(way.getLeft(),way.getRight());
+					this.path.add(0, way.getLeft());
+				} catch(Exception e) {
+					System.out.println("je ne peux pas t'aider, je ne peux pas accéder à ta position");
+				}
+			}
 
 			// maj du path si nécessaire
 			if(this.path != null && this.path.size()>0 && this.path.get(0).equals(myPosition))
@@ -265,6 +276,7 @@ public class WalkBehaviour extends SimpleBehaviour{
 		return chemins;
 	}
 
+	// Retourne la liste des noeuds de l'observation lobs
 	public static List<String> obsString(List<Couple<String,List<Couple<Observation,Integer>>>> lobs) {
 		List<String> newlobs = new ArrayList<String>();
 		for(Couple<String,List<Couple<Observation,Integer>>> o : lobs) {

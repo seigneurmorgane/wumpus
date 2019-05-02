@@ -11,9 +11,9 @@ import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
-import jade.core.behaviours.SimpleBehaviour;
+import jade.core.behaviours.OneShotBehaviour;
 
-public class WalkBehaviour extends SimpleBehaviour{
+public class WalkBehaviour extends OneShotBehaviour{
 
 	/**
 	 * 
@@ -28,9 +28,8 @@ public class WalkBehaviour extends SimpleBehaviour{
 	private List<String> path;
 	private List<Couple<Integer,Couple<String,List<String>>>> otherPaths;
 	private List<String> otherOpenNodes;
-	private boolean finished = false;
 	private List<Couple<String,String>> help;
-
+	
 	public WalkBehaviour(final AbstractDedaleAgent myagent, MapRepresentation myMap, List<Couple<String,List<Couple<Observation,Integer>>>> closedNodes,
 			List<Couple<String,List<Couple<Observation,Integer>>>> otherClosedNodes, List<String> openNodes, List<Couple<String,String>> Edges, 
 			List<Couple<String,String>> otherEdges, List<String> path, List<Couple<Integer,Couple<String,List<String>>>> otherPaths, List<String> otherOpenNodes, List<Couple<String,String>> help) {
@@ -66,6 +65,11 @@ public class WalkBehaviour extends SimpleBehaviour{
 					this.openNodes.remove(node.getLeft());	
 				}
 				this.myMap.addNode(node.getLeft(),MapAttribute.closed);
+			}
+			int i = this.closedNodes.indexOf(node);
+			if( i > 0 && ((node.getRight().isEmpty() && !this.closedNodes.get(i).getRight().isEmpty())
+					|| (node.getRight().size() < this.closedNodes.get(i).getRight().size()))) {
+				remplacerNoeud(node.getLeft(), node.getRight());
 			}
 		}
 		this.otherClosedNodes.clear();
@@ -146,8 +150,6 @@ public class WalkBehaviour extends SimpleBehaviour{
 					this.myMap.addEdge(myPosition, nodeId.getLeft());
 				}
 				this.remplacerNoeud(nodeId.getLeft(), nodeId.getRight());
-
-
 			}
 
 			// si toujours pas de chemin à prendre 
@@ -189,7 +191,6 @@ public class WalkBehaviour extends SimpleBehaviour{
 
 
 			if(nextNode != null) {
-				this.finished=true;
 				try {
 					if(!((AbstractDedaleAgent)this.myAgent).moveTo(nextNode)) {
 						if(this.openNodes.size() <= 1) {
@@ -223,14 +224,8 @@ public class WalkBehaviour extends SimpleBehaviour{
 					e.printStackTrace();
 				}
 			}
-
 		}
 
-	}
-
-	@Override
-	public boolean done() {
-		return this.finished;
 	}
 
 	public int onEnd() {
@@ -238,7 +233,11 @@ public class WalkBehaviour extends SimpleBehaviour{
 	}
 
 
-	// check si la valeur du noeud fermé est déjà rentrée dans la bd
+	/**
+	 * 
+	 * @param nodeId
+	 * @return Vrai si nodeId est déjà connu par l'agent en temps que noeud fermé
+	 */
 	public boolean closedNodesContains(String nodeId) {
 		Iterator<Couple<String,List<Couple<Observation,Integer>>>> iter=this.closedNodes.iterator();
 		while(iter.hasNext()){
@@ -251,7 +250,10 @@ public class WalkBehaviour extends SimpleBehaviour{
 
 	}
 
-	// retourne une liste de tous les chemins interdits
+	/**
+	 *  
+	 * @return une liste de tous les chemins interdits
+	 */
 	public List<String> cheminsInterdits() {
 		List<String> chemins= new ArrayList<String>();
 		for (Couple<Integer,Couple<String,List<String>>> elem : this.otherPaths) {
@@ -270,7 +272,11 @@ public class WalkBehaviour extends SimpleBehaviour{
 		return chemins;
 	}
 
-	// Retourne la liste des noeuds de l'observation lobs
+	/**
+	 * 
+	 * @param lobs observation
+	 * @return la liste des noeuds de l'observation lobs
+	 */
 	public static List<String> obsString(List<Couple<String,List<Couple<Observation,Integer>>>> lobs) {
 		List<String> newlobs = new ArrayList<String>();
 		for(Couple<String,List<Couple<Observation,Integer>>> o : lobs) {
@@ -280,7 +286,13 @@ public class WalkBehaviour extends SimpleBehaviour{
 		return newlobs;
 	}
 
-	// détermine quel chemin prendre pour ne bloquer aucun agent en fonction des priorités
+	/**
+	 * détermine quel chemin prendre pour ne bloquer aucun agent en fonction des priorités
+	 * 
+	 * @param lobs observations autour de soi
+	 * @param p
+	 * @return les chemins non bloqué
+	 */
 	public List<String> whichWay(List<Couple<String,List<Couple<Observation,Integer>>>> lobs, String p) {
 		List<String> way = obsString(lobs);
 		List<String> chems = this.cheminsInterdits();
@@ -302,7 +314,13 @@ public class WalkBehaviour extends SimpleBehaviour{
 		else
 			return res;
 	}
-
+	
+	/**
+	 * Remplace un noeud dans la liste des noeud fermé
+	 * 
+	 * @param node noeud remplacé
+	 * @param obs observation du noeud remplacé
+	 */
 	public void remplacerNoeud(String node, List<Couple<Observation,Integer>> obs) {
 		boolean b = true;
 		Iterator<Couple<String,List<Couple<Observation,Integer>>>> iter = this.closedNodes.iterator();
@@ -310,16 +328,12 @@ public class WalkBehaviour extends SimpleBehaviour{
 		while(iter.hasNext() && b) {
 			Couple<String,List<Couple<Observation,Integer>>> comp = iter.next();
 			if(comp.getLeft().equals(node)) {
-				comp = new Couple<String,List<Couple<Observation,Integer>>>(node,obs);
+				i = this.closedNodes.indexOf(comp);
+				this.closedNodes.set(i, new Couple<String,List<Couple<Observation,Integer>>>(node,obs));
 				b = false;
 			}
-
 		}
-
-
 	}
-
-
 
 	public List<String> cheminsInterdits2() {
 		List<String> chemins= new ArrayList<String>();
@@ -352,5 +366,4 @@ public class WalkBehaviour extends SimpleBehaviour{
 		else
 			return res;
 	}
-
 }

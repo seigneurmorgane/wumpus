@@ -3,7 +3,8 @@ package eu.su.mas.dedaleEtu.mas.agents.dummies;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedale.mas.agent.behaviours.startMyBehaviours;
-import eu.su.mas.dedaleEtu.mas.behaviours.explo.InitDFBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.EndBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.InitDFBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.collect.*;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 
@@ -79,6 +80,7 @@ public class CollectorAgent extends AbstractDedaleAgent {
 		fsm.registerState(new SendDatasBehaviour(this,this.closedNodes, this.Edges, this.path,this.openNodes),"Send");
 		fsm.registerState(new ReceiveDatasBehaviour(this,this.path,this.otherPaths,this.otherClosedNodes,this.otherEdges,this.otherOpenNodes,this.myMap,this.locationTanker,this.help),"Receive");
 		fsm.registerState(new HelpRequiredBehaviour(this,this.type_tresor, this.closedNodes,this.Edges,this.openNodes),"Help");
+		fsm.registerLastState(new EndBehaviour(this), "End");
 		
 
 		/************************************************
@@ -92,6 +94,7 @@ public class CollectorAgent extends AbstractDedaleAgent {
 		fsm.registerTransition("Send", "Receive",3);
 		fsm.registerTransition("Receive", "Walk",1);
 		fsm.registerTransition("Help","Send",2);
+		fsm.registerTransition("Walk","End",5);
 
 
 		/************************************************

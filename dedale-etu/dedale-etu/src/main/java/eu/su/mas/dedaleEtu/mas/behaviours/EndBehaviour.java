@@ -1,4 +1,4 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.explo;
+package eu.su.mas.dedaleEtu.mas.behaviours;
 
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import jade.core.behaviours.OneShotBehaviour;
@@ -14,10 +14,6 @@ public class EndBehaviour extends OneShotBehaviour {
 	@Override
 	public void action() {
 		System.out.println("Exploration terminer");
+		System.out.println(((AbstractDedaleAgent) this.myAgent).getBackPackFreeSpace());
 	}
-	
-	public int onEnd() {
-		return 1;
-	}
-
 }

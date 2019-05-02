@@ -16,15 +16,6 @@ import dataStructures.tuple.Couple;
 import jade.core.behaviours.FSMBehaviour;
 import jade.core.behaviours.Behaviour;
 
-/**
- * This dummy collector moves randomly, tries all its methods at each time step,
- * store the treasure that match is treasureType in its backpack and intends to
- * empty its backPack in the Tanker agent. @see
- * {@link RandomWalkExchangeBehaviour}
- * 
- * @author hc
- *
- */
 public class CollectorAgent extends AbstractDedaleAgent {
 
 	private static final long serialVersionUID = -1784844593772918359L;

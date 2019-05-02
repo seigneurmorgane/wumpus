@@ -10,14 +10,7 @@ import eu.su.mas.dedaleEtu.mas.behaviours.tank.*;
 import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.FSMBehaviour;
 
-/**
- * Dummy Tanker agent. It does nothing more than printing what it observes every 10s and receiving the treasures from other agents. 
- * <br/>
- * Note that this last behaviour is hidden, every tanker agent automatically possess it.
- * 
- * @author hc
- *
- */
+
 public class TankerAgent extends AbstractDedaleAgent{
 
 	/**
@@ -27,13 +20,6 @@ public class TankerAgent extends AbstractDedaleAgent{
 
 
 
-	/**
-	 * This method is automatically called when "agent".start() is executed.
-	 * Consider that Agent is launched for the first time. 
-	 * 			1) set the agent attributes 
-	 *	 		2) add the behaviours
-	 *          
-	 */
 	protected void setup(){
 
 		super.setup();
